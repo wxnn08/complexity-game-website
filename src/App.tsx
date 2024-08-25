@@ -7,6 +7,7 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 interface ICode {
   code: string
+  language: string
 }
 
 function App() {
@@ -24,8 +25,8 @@ function App() {
       <Navbar/>
       <div className="flex justify-center items-center">
         <div className="grid grid-cols-2 gap-4 w-full px-12 h-[70vh]">
-          <CodeDisplay language="clojure" mdString={codes?.at(0)?.code ?? "empty"}/>
-          <CodeDisplay language="clojure" mdString={codes?.at(1)?.code ?? "empty"}/>
+          <CodeDisplay language={codes?.at(0)?.language ?? "empty"} mdString={codes?.at(0)?.code ?? "empty"}/>
+          <CodeDisplay language={codes?.at(1)?.language ?? "empty"} mdString={codes?.at(1)?.code ?? "empty"}/>
         </div>
 
       </div>
