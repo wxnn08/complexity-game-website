@@ -1,18 +1,31 @@
 import CodeDisplay from "./components/CodeDisplay";
 import Navbar from "./components/Navbar";
+import {useState, useEffect} from 'react'
+import axios from "axios";
 
-const codeString = `
-(defn teste1 []
-  (mapv (partial + 3))) ; aksjdlkajdlkasjdklajsdlaskjdlak`;
+const apiUrl = process.env.REACT_APP_API_URL;
+
+interface ICode {
+  code: string
+}
+
 function App() {
+
+  const [codes, setCodes] = useState<[ICode]>();
+  useEffect(() => {
+    axios.get(`${apiUrl}/api/code/2`)
+      .then(response => {
+        setCodes(response.data.codes)
+      })
+  }, [])
 
   return (
     <>
       <Navbar/>
       <div className="flex justify-center items-center">
         <div className="grid grid-cols-2 gap-4 w-full px-12 h-[70vh]">
-          <CodeDisplay language="clojure" mdString={codeString}/>
-          <CodeDisplay language="clojure" mdString={codeString}/>
+          <CodeDisplay language="clojure" mdString={codes?.at(0)?.code ?? "empty"}/>
+          <CodeDisplay language="clojure" mdString={codes?.at(1)?.code ?? "empty"}/>
         </div>
 
       </div>
