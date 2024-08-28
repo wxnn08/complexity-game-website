@@ -10,6 +10,20 @@ interface ICode {
   language: string
 }
 
+function getNewIndexes(currentValueA: number, currentValueB: number, maxValue: number): [number, number] {
+  let num1 = Math.floor(Math.random() * maxValue);
+  let num2 = Math.floor(Math.random() * maxValue);
+
+  while (num1 === currentValueA) {
+    num1 = Math.floor(Math.random() * maxValue);
+  }
+
+  while (num2 === currentValueB || num2 === num1) {
+    num2 = Math.floor(Math.random() * maxValue);
+  }
+  return [num1, num2]
+}
+
 function App() {
 
   const [codes, setCodes] = useState<[ICode]>();
@@ -19,17 +33,7 @@ function App() {
   const handleButtonClick = () => {
     if(codes && codes.length < 2) return;
 
-    let n = codes!.length;
-    let num1 = Math.floor(Math.random() * n);
-    let num2 = Math.floor(Math.random() * n);
-
-    while (num1 === leftCodeIndex) {
-      num1 = Math.floor(Math.random() * n);
-    }
-
-    while (num2 === rightCodeIndex || num2 === num1) {
-      num2 = Math.floor(Math.random() * n);
-    }
+    const [num1, num2] = getNewIndexes(leftCodeIndex, rightCodeIndex, codes!.length);
 
     setLeftCodeIndex(num1);
     setRightCodeIndex(num2);
@@ -45,7 +49,7 @@ function App() {
   return (
     <>
       <Navbar/>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-4">
         <div className="grid grid-cols-2 gap-4 w-full px-12 h-[70vh]">
           <CodeDisplay language={codes?.at(leftCodeIndex)?.language ?? "empty"}
                        mdString={codes?.at(leftCodeIndex)?.code ?? "loading..."}/>
