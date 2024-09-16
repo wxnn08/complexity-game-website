@@ -20,8 +20,8 @@ export default function GuessingPanel({
 }: GuessingPanelProps) {
   const [codes, setCodes] = useState<ICode[]>([]);
   const [index, setIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(gameTime * 60); // Convertendo minutos para segundos
-  const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
+  const [timeLeft, setTimeLeft] = useState(gameTime * 60);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleButtonClick = (selected: string) => {
     setAnswers((prevAnswers) => [...prevAnswers, selected]);
@@ -33,7 +33,6 @@ export default function GuessingPanel({
   };
 
   useEffect(() => {
-    // Buscar códigos do backend
     axios
       .get(`${apiUrl}/api/code/20`)
       .then((response) => {
@@ -42,13 +41,13 @@ export default function GuessingPanel({
       })
       .catch((error) => {
         console.error("Erro ao buscar códigos:", error);
-        // Opcional: lidar com estado de erro aqui
+        // TODO: lidar com estado de erro
         setIsLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    if (isLoading) return; // Não inicia o temporizador até que o carregamento termine
+    if (isLoading) return;
     if (timeLeft <= 0) {
       onGameEnd(answers);
       return;
@@ -57,7 +56,6 @@ export default function GuessingPanel({
     return () => clearTimeout(timer);
   }, [timeLeft, onGameEnd, answers, isLoading]);
 
-  // Formatar tempo em MM:SS
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
       .toString()
@@ -66,11 +64,9 @@ export default function GuessingPanel({
     return `${mins}:${secs}`;
   };
 
-  // Calcular porcentagem do progresso
   const progressPercentage = (timeLeft / (gameTime * 60)) * 100;
 
   if (isLoading) {
-    // Exibir tela de carregamento
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <div className="text-2xl font-bold mb-4">Carregando...</div>
@@ -83,7 +79,7 @@ export default function GuessingPanel({
 
   return (
     <>
-      {/* Temporizador acima do painel */}
+      {/* Temporizador */}
       <div className="flex flex-col justify-center items-center mt-4">
         <div className="text-2xl font-bold mb-2">
           Tempo restante: {formatTime(timeLeft)}
