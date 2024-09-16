@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ICode } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
 
@@ -23,10 +23,16 @@ export default function GuessingPanel({
   const [timeLeft, setTimeLeft] = useState(gameTime * 60);
   const [isLoading, setIsLoading] = useState(true);
 
+  const answersRef = useRef(answers);
+
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
+
   const handleButtonClick = (selected: string) => {
     setAnswers((prevAnswers) => [...prevAnswers, selected]);
     if (index + 2 >= codes.length) {
-      onGameEnd(answers);
+      onGameEnd(answersRef.current);
     } else {
       setIndex(index + 1);
     }
@@ -37,11 +43,10 @@ export default function GuessingPanel({
       .get(`${apiUrl}/api/code/20`)
       .then((response) => {
         setCodes(response.data.codes);
-        setIsLoading(false); // Dados carregados
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Erro ao buscar códigos:", error);
-        // TODO: lidar com estado de erro
         setIsLoading(false);
       });
   }, []);
@@ -49,12 +54,12 @@ export default function GuessingPanel({
   useEffect(() => {
     if (isLoading) return;
     if (timeLeft <= 0) {
-      onGameEnd(answers);
+      onGameEnd(answersRef.current);
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, onGameEnd, answers, isLoading]);
+  }, [timeLeft, isLoading]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)

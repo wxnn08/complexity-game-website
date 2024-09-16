@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import GuessingPanel from "./components/GuessingPanel";
 import Navbar from "./components/Navbar";
 import Result from "./components/Result";
@@ -12,14 +12,14 @@ function App() {
   const handleGameStart = (selectedTime: number) => {
     setGameTime(selectedTime);
     setGameStarted(true);
-    setAnswers([]); // Reseta as respostas quando um novo jogo começa
+    setAnswers([]);
   };
 
-  const onGameEnd = (userAnswers: string[]) => {
+  const onGameEnd = useCallback((userAnswers: string[]) => {
     console.log(userAnswers);
     setGameStarted(false);
-    // TODO: implementar a lógica para verificar a pontuação
-  };
+    // Lógica para verificar a pontuação do usuário
+  }, []);
 
   const handleRestart = () => {
     setGameTime(null);
@@ -29,8 +29,11 @@ function App() {
   return (
     <>
       <Navbar />
-      {!gameStarted && answers.length === 0 && (
+      {!gameStarted && gameTime === null && (
         <Home onGameStart={handleGameStart} />
+      )}
+      {!gameStarted && gameTime !== null && (
+        <Result answers={answers} onRestart={handleRestart} />
       )}
       {gameStarted && gameTime && (
         <GuessingPanel
@@ -39,9 +42,6 @@ function App() {
           answers={answers}
           setAnswers={setAnswers}
         />
-      )}
-      {!gameStarted && answers.length > 0 && (
-        <Result answers={answers} onRestart={handleRestart} />
       )}
     </>
   );
