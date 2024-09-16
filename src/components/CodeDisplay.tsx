@@ -16,15 +16,23 @@ SyntaxHighlighter.registerLanguage("javascript", javascript);
 SyntaxHighlighter.registerLanguage("java", java);
 
 export default function CodeDisplay({ codeData }: { codeData?: ICode }) {
+  if (!codeData) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-lg">Carregando código...</div>
+      </div>
+    );
+  }
+
   return (
     <SyntaxHighlighter
       style={oneDark}
-      language={codeData?.language}
-      className="mockup-code"
+      language={codeData.language}
+      className="mockup-code h-full overflow-auto"
       showLineNumbers={true}
       useInlineStyles={true}
     >
-      {codeData?.code ?? "Loading..."}
+      {codeData.code}
     </SyntaxHighlighter>
   );
 }

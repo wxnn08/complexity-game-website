@@ -21,6 +21,7 @@ export default function GuessingPanel({
   const [codes, setCodes] = useState<ICode[]>([]);
   const [index, setIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(gameTime * 60); // Convertendo minutos para segundos
+  const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
 
   const handleButtonClick = (selected: string) => {
     setAnswers((prevAnswers) => [...prevAnswers, selected]);
@@ -32,21 +33,31 @@ export default function GuessingPanel({
   };
 
   useEffect(() => {
-    axios.get(`${apiUrl}/api/code/20`).then((response) => {
-      setCodes(response.data.codes);
-    });
+    // Buscar códigos do backend
+    axios
+      .get(`${apiUrl}/api/code/20`)
+      .then((response) => {
+        setCodes(response.data.codes);
+        setIsLoading(false); // Dados carregados
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar códigos:", error);
+        // Opcional: lidar com estado de erro aqui
+        setIsLoading(false);
+      });
   }, []);
 
   useEffect(() => {
+    if (isLoading) return; // Não inicia o temporizador até que o carregamento termine
     if (timeLeft <= 0) {
       onGameEnd(answers);
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, onGameEnd, answers]);
+  }, [timeLeft, onGameEnd, answers, isLoading]);
 
-  // Formata o tempo restante em minutos e segundos
+  // Formatar tempo em MM:SS
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
       .toString()
@@ -55,12 +66,24 @@ export default function GuessingPanel({
     return `${mins}:${secs}`;
   };
 
-  // Calcular a porcentagem de tempo restante
+  // Calcular porcentagem do progresso
   const progressPercentage = (timeLeft / (gameTime * 60)) * 100;
+
+  if (isLoading) {
+    // Exibir tela de carregamento
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="text-2xl font-bold mb-4">Carregando...</div>
+        <div className="flex items-center justify-center space-x-2">
+          <div className="w-8 h-8 rounded-full animate-spin border-4 border-solid border-primary border-t-transparent"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Temporizador */}
+      {/* Temporizador acima do painel */}
       <div className="flex flex-col justify-center items-center mt-4">
         <div className="text-2xl font-bold mb-2">
           Tempo restante: {formatTime(timeLeft)}
@@ -82,13 +105,22 @@ export default function GuessingPanel({
 
       {/* Botões de seleção */}
       <div className="flex justify-center items-center gap-4 mt-4">
-        <button onClick={() => handleButtonClick("left")} className="btn btn-primary btn-wide">
+        <button
+          onClick={() => handleButtonClick("left")}
+          className="btn btn-primary btn-wide"
+        >
           Esquerda é mais rápido
         </button>
-        <button onClick={() => handleButtonClick("equal")} className="btn btn-accent btn-wide">
+        <button
+          onClick={() => handleButtonClick("equal")}
+          className="btn btn-accent btn-wide"
+        >
           São iguais
         </button>
-        <button onClick={() => handleButtonClick("right")} className="btn btn-secondary btn-wide">
+        <button
+          onClick={() => handleButtonClick("right")}
+          className="btn btn-secondary btn-wide"
+        >
           Direita é mais rápido
         </button>
       </div>
