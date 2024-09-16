@@ -6,22 +6,18 @@ import cpp from "react-syntax-highlighter/dist/cjs/languages/prism/cpp";
 import c from "react-syntax-highlighter/dist/cjs/languages/prism/c";
 import javascript from "react-syntax-highlighter/dist/cjs/languages/prism/javascript";
 import java from "react-syntax-highlighter/dist/cjs/languages/prism/java";
+import { ICode } from "../schemas/ICode";
 
-interface CodeDisplayProps {
-    language: string;
-    mdString: string;
-}
-
-export default function CodeDisplay({ language, mdString }: CodeDisplayProps) {
+export default function CodeDisplay({codeData}: {codeData?: ICode}) {
     return (
                 <SyntaxHighlighter
                     style={oneDark}
-                    language={language}
+                    language={codeData?.language}
                     className="mockup-code"
                     showLineNumbers={true}
                     useInlineStyles={true}
                 >
-                    {mdString}
+                    {codeData?.code ?? "Loading..."}
                 </SyntaxHighlighter>
     );
 }
