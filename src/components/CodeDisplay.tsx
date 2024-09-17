@@ -8,24 +8,31 @@ import javascript from "react-syntax-highlighter/dist/cjs/languages/prism/javasc
 import java from "react-syntax-highlighter/dist/cjs/languages/prism/java";
 import { ICode } from "../schemas/ICode";
 
-export default function CodeDisplay({codeData}: {codeData?: ICode}) {
-    return (
-                <SyntaxHighlighter
-                    style={oneDark}
-                    language={codeData?.language}
-                    className="mockup-code"
-                    showLineNumbers={true}
-                    useInlineStyles={true}
-                >
-                    {codeData?.code ?? "Loading..."}
-                </SyntaxHighlighter>
-    );
-}
-SyntaxHighlighter.registerLanguage("clojure", clojure)
-SyntaxHighlighter.registerLanguage("python", python)
-SyntaxHighlighter.registerLanguage("cpp", cpp)
-SyntaxHighlighter.registerLanguage("c", c)
-SyntaxHighlighter.registerLanguage("javascript", javascript)
-SyntaxHighlighter.registerLanguage("java", java)
+SyntaxHighlighter.registerLanguage("clojure", clojure);
+SyntaxHighlighter.registerLanguage("python", python);
+SyntaxHighlighter.registerLanguage("cpp", cpp);
+SyntaxHighlighter.registerLanguage("c", c);
+SyntaxHighlighter.registerLanguage("javascript", javascript);
+SyntaxHighlighter.registerLanguage("java", java);
 
-// https://biplobsd.me/blogs/view/syntax-highlight-code-in-NextJS-tailwindcss-daisyui.md
+export default function CodeDisplay({ codeData }: { codeData?: ICode }) {
+  if (!codeData) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-lg">Carregando código...</div>
+      </div>
+    );
+  }
+
+  return (
+    <SyntaxHighlighter
+      style={oneDark}
+      language={codeData.language}
+      className="mockup-code h-full overflow-auto"
+      showLineNumbers={true}
+      useInlineStyles={true}
+    >
+      {codeData.code}
+    </SyntaxHighlighter>
+  );
+}
