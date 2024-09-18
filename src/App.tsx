@@ -14,6 +14,7 @@ function App() {
   const [answers, setAnswers] = useState<string[]>([]);
   const [score, setScore] = useState(0);
   const [playerName, setPlayerName] = useState("");
+  const [loadingResult, setLoadingResult] = useState(false);
 
   const handleGameStart = (selectedTime: number, playerName: string) => {
     setGameTime(selectedTime);
@@ -24,7 +25,7 @@ function App() {
   };
 
   const onGameEnd = useCallback(
-    (
+    async (
       userAnswers: string[],
       codes: ICode[],
       complexityCost: { complexity: string; cost: number }[]
@@ -61,20 +62,21 @@ function App() {
         }
       }
 
-      axios
-        .post(`${apiUrl}/api/ranking`, {
+      setLoadingResult(true);
+
+      try {
+        // Envia a pontuação para o backend
+        await axios.post(`${apiUrl}/api/ranking`, {
           name: playerName,
           score: userScore,
-        })
-        .then((response) => {
-          console.log("Ranking atualizado:", response.data);
-        })
-        .catch((error) => {
-          console.error("Erro ao atualizar o ranking:", error);
         });
+      } catch (error) {
+        console.error("Erro ao atualizar o ranking:", error);
+      }
 
       setScore(userScore);
       setGameStarted(false);
+      setLoadingResult(false);
     },
     [playerName]
   );
@@ -93,7 +95,13 @@ function App() {
         <Home onGameStart={handleGameStart} />
       )}
       {!gameStarted && gameTime !== null && (
-        <Result answers={answers} onRestart={handleRestart} score={score} />
+        <Result
+          answers={answers}
+          onRestart={handleRestart}
+          score={score}
+          playerName={playerName}
+          loadingResult={loadingResult}
+        />
       )}
       {gameStarted && gameTime && (
         <GuessingPanel
