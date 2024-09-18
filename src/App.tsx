@@ -1,21 +1,26 @@
 import React, { useState, useCallback } from "react";
+import axios from "axios";
 import GuessingPanel from "./components/GuessingPanel";
 import Navbar from "./components/Navbar";
 import Result from "./components/Result";
 import Home from "./components/Home";
 import { ICode } from "./schemas/ICode";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function App() {
   const [gameTime, setGameTime] = useState<number | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
   const [score, setScore] = useState(0);
+  const [playerName, setPlayerName] = useState("");
 
-  const handleGameStart = (selectedTime: number) => {
+  const handleGameStart = (selectedTime: number, playerName: string) => {
     setGameTime(selectedTime);
     setGameStarted(true);
     setAnswers([]);
     setScore(0);
+    setPlayerName(playerName);
   };
 
   const onGameEnd = useCallback(
@@ -56,16 +61,29 @@ function App() {
         }
       }
 
+      axios
+        .post(`${apiUrl}/api/ranking`, {
+          name: playerName,
+          score: userScore,
+        })
+        .then((response) => {
+          console.log("Ranking atualizado:", response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao atualizar o ranking:", error);
+        });
+
       setScore(userScore);
       setGameStarted(false);
     },
-    []
+    [playerName]
   );
 
   const handleRestart = () => {
     setGameTime(null);
     setAnswers([]);
     setScore(0);
+    setPlayerName("");
   };
 
   return (
