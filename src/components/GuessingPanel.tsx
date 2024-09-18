@@ -7,7 +7,11 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 interface GuessingPanelProps {
   gameTime: number;
-  onGameEnd: (answers: string[]) => void;
+  onGameEnd: (
+    userAnswers: string[],
+    codes: ICode[],
+    complexityCost: { complexity: string; cost: number }[]
+  ) => void;
   answers: string[];
   setAnswers: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -22,6 +26,10 @@ export default function GuessingPanel({
   const [index, setIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(gameTime * 60);
   const [isLoading, setIsLoading] = useState(true);
+  const [complexityCost, setComplexityCost] = useState<
+    { complexity: string; cost: number }[]
+  >([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const answersRef = useRef(answers);
 
@@ -32,7 +40,8 @@ export default function GuessingPanel({
   const handleButtonClick = (selected: string) => {
     setAnswers((prevAnswers) => [...prevAnswers, selected]);
     if (index + 2 >= codes.length) {
-      onGameEnd(answersRef.current);
+      setIsSubmitting(true);
+      onGameEnd(answersRef.current, codes, complexityCost);
     } else {
       setIndex(index + 1);
     }
@@ -43,6 +52,7 @@ export default function GuessingPanel({
       .get(`${apiUrl}/api/code/20`)
       .then((response) => {
         setCodes(response.data.codes);
+        setComplexityCost(response.data["complexity-cost"]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -54,7 +64,7 @@ export default function GuessingPanel({
   useEffect(() => {
     if (isLoading) return;
     if (timeLeft <= 0) {
-      onGameEnd(answersRef.current);
+      onGameEnd(answersRef.current, codes, complexityCost);
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -75,6 +85,17 @@ export default function GuessingPanel({
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <div className="text-2xl font-bold mb-4">Carregando...</div>
+        <div className="flex items-center justify-center space-x-2">
+          <div className="w-8 h-8 rounded-full animate-spin border-4 border-solid border-primary border-t-transparent"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isSubmitting) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="text-2xl font-bold mb-4">Finalizando...</div>
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 rounded-full animate-spin border-4 border-solid border-primary border-t-transparent"></div>
         </div>
