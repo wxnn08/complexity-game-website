@@ -70,14 +70,16 @@ export default function Result({
           O tempo acabou antes que você pudesse responder alguma questão.
         </p>
       )}
-      <h3 className="text-2xl font-bold mt-6 mb-4">Ranking - Grupo: {groupName}</h3>
+      <h3 className="text-2xl font-bold mt-6 mb-4">
+        Ranking - Grupo: {groupName}
+      </h3>
       <div className="overflow-x-auto w-full max-w-2xl mt-4">
-        <table className="table w-full table-auto">
+        <table className="table w-full">
           <thead>
             <tr>
-              <th className="px-4 py-2">Posição</th>
-              <th className="px-4 py-2">Nome</th>
-              <th className="px-4 py-2">Pontuação</th>
+              <th></th>
+              <th>Nome</th>
+              <th>Pontuação</th>
             </tr>
           </thead>
           <tbody>
@@ -85,14 +87,14 @@ export default function Result({
               <tr
                 key={index}
                 className={
-                  entry.name === playerName && entry.score === score
-                    ? "bg-green-200"
+                  entry.name === playerName
+                    ? "active"
                     : ""
                 }
               >
-                <td className="border px-4 py-2 text-center">{index + 1}</td>
-                <td className="border px-4 py-2">{entry.name}</td>
-                <td className="border px-4 py-2 text-center">{entry.score}</td>
+                <th>{index + 1}</th>
+                <td>{entry.name}</td>
+                <td>{entry.score}</td>
               </tr>
             ))}
           </tbody>

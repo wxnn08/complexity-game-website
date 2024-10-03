@@ -43,11 +43,11 @@ export default function GuessingPanel({
       userAnswer: selected,
     };
     setUserResponses((prevResponses) => [...prevResponses, newResponse]);
-    if (index + 2 >= codes.length) {
+    if (index + 3 >= codes.length) {
       setIsSubmitting(true);
       onGameEnd(userResponsesRef.current, complexityCost);
     } else {
-      setIndex(index + 1);
+      setIndex(index + 2);
     }
   };
 
