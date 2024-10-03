@@ -43,11 +43,11 @@ export default function GuessingPanel({
       userAnswer: selected,
     };
     setUserResponses((prevResponses) => [...prevResponses, newResponse]);
-    if (index + 3 >= codes.length) {
+    if (index + 2 >= codes.length) {
       setIsSubmitting(true);
       onGameEnd(userResponsesRef.current, complexityCost);
     } else {
-      setIndex(index + 2);
+      setIndex(index + 1);
     }
   };
 
@@ -108,7 +108,7 @@ export default function GuessingPanel({
   }
 
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <div className="flex flex-col justify-center items-center mt-4">
         <div className="text-2xl font-bold mb-2">
           Tempo restante: {formatTime(timeLeft)}
@@ -119,34 +119,59 @@ export default function GuessingPanel({
           max="100"
         ></progress>
       </div>
-
-      <div className="flex justify-center items-center mt-4">
-        <div className="grid grid-cols-2 gap-4 w-full px-12 h-[70vh]">
+      <div className="flex-grow flex justify-center items-center mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12 h-full">
           <CodeDisplay codeData={codes[index]} />
           <CodeDisplay codeData={codes[index + 1]} />
         </div>
       </div>
-
-      <div className="flex justify-center items-center gap-4 mt-4">
+      <div className="btm-nav">
         <button
           onClick={() => handleButtonClick("left")}
-          className="btn btn-primary btn-wide"
+          className="text-primary bg-primary text-white"
         >
-          Esquerda é mais rápido
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            stroke="none"
+          >
+            <path d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="btm-nav-label">Esquerda é mais rápido</span>
         </button>
         <button
           onClick={() => handleButtonClick("equal")}
-          className="btn btn-accent btn-wide"
+          className="text-accent bg-accent text-white"
         >
-          São iguais
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            stroke="none"
+          >
+            <path d="M5 10h14M5 14h14" />
+          </svg>
+          <span className="btm-nav-label">São iguais</span>
         </button>
         <button
           onClick={() => handleButtonClick("right")}
-          className="btn btn-secondary btn-wide"
+          className="text-secondary bg-secondary text-white"
         >
-          Direita é mais rápido
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            stroke="none"
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+          <span className="btm-nav-label">Direita é mais rápido</span>
         </button>
       </div>
-    </>
+    </div>
   );
 }
