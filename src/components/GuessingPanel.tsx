@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-import { ICode } from "../schemas/ICode";
+import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -8,19 +8,18 @@ const apiUrl = process.env.REACT_APP_API_URL;
 interface GuessingPanelProps {
   gameTime: number;
   onGameEnd: (
-    userAnswers: string[],
-    codes: ICode[],
+    userResponses: UserResponse[],
     complexityCost: { complexity: string; cost: number }[]
   ) => void;
-  answers: string[];
-  setAnswers: React.Dispatch<React.SetStateAction<string[]>>;
+  userResponses: UserResponse[];
+  setUserResponses: React.Dispatch<React.SetStateAction<UserResponse[]>>;
 }
 
 export default function GuessingPanel({
   gameTime,
   onGameEnd,
-  answers,
-  setAnswers,
+  userResponses,
+  setUserResponses,
 }: GuessingPanelProps) {
   const [codes, setCodes] = useState<ICode[]>([]);
   const [index, setIndex] = useState(0);
@@ -31,19 +30,24 @@ export default function GuessingPanel({
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const answersRef = useRef(answers);
+  const userResponsesRef = useRef(userResponses);
 
   useEffect(() => {
-    answersRef.current = answers;
-  }, [answers]);
+    userResponsesRef.current = userResponses;
+  }, [userResponses]);
 
   const handleButtonClick = (selected: string) => {
-    setAnswers((prevAnswers) => [...prevAnswers, selected]);
-    if (index + 2 >= codes.length) {
+    const newResponse: UserResponse = {
+      leftCode: codes[index],
+      rightCode: codes[index + 1],
+      userAnswer: selected,
+    };
+    setUserResponses((prevResponses) => [...prevResponses, newResponse]);
+    if (index + 3 >= codes.length) {
       setIsSubmitting(true);
-      onGameEnd(answersRef.current, codes, complexityCost);
+      onGameEnd(userResponsesRef.current, complexityCost);
     } else {
-      setIndex(index + 1);
+      setIndex(index + 2);
     }
   };
 
@@ -64,7 +68,7 @@ export default function GuessingPanel({
   useEffect(() => {
     if (isLoading) return;
     if (timeLeft <= 0) {
-      onGameEnd(answersRef.current, codes, complexityCost);
+      onGameEnd(userResponsesRef.current, complexityCost);
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -105,7 +109,6 @@ export default function GuessingPanel({
 
   return (
     <>
-      {/* Temporizador */}
       <div className="flex flex-col justify-center items-center mt-4">
         <div className="text-2xl font-bold mb-2">
           Tempo restante: {formatTime(timeLeft)}
@@ -117,7 +120,6 @@ export default function GuessingPanel({
         ></progress>
       </div>
 
-      {/* Painel de códigos */}
       <div className="flex justify-center items-center mt-4">
         <div className="grid grid-cols-2 gap-4 w-full px-12 h-[70vh]">
           <CodeDisplay codeData={codes[index]} />
@@ -125,7 +127,6 @@ export default function GuessingPanel({
         </div>
       </div>
 
-      {/* Botões de seleção */}
       <div className="flex justify-center items-center gap-4 mt-4">
         <button
           onClick={() => handleButtonClick("left")}

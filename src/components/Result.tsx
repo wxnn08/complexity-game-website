@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { UserResponse } from "../schemas/ICode";
+import AnswerSummary from "./AnswerSummary";
 
 interface RankingEntry {
   name: string;
@@ -7,7 +9,7 @@ interface RankingEntry {
 }
 
 interface ResultProps {
-  answers: string[];
+  userResponses: UserResponse[];
   onRestart: () => void;
   score: number;
   playerName: string;
@@ -15,7 +17,7 @@ interface ResultProps {
 }
 
 export default function Result({
-  answers,
+  userResponses,
   onRestart,
   score,
   playerName,
@@ -52,12 +54,12 @@ export default function Result({
   }
 
   return (
-    <div className="flex flex-col items-center mt-4">
+    <div className="flex flex-col items-center mt-4 w-full px-4">
       <h2 className="text-3xl font-bold mb-4">Resultado</h2>
-      {answers.length > 0 ? (
+      {userResponses.length > 0 ? (
         <>
           <p className="text-xl">
-            Você respondeu {answers.length} questões!
+            Você respondeu {userResponses.length} questões!
           </p>
           <p className="text-xl mb-4">Sua pontuação: {score}</p>
         </>
@@ -94,6 +96,9 @@ export default function Result({
           </tbody>
         </table>
       </div>
+
+      <AnswerSummary userResponses={userResponses} />
+
       <button className="btn btn-primary mt-6" onClick={onRestart}>
         Voltar ao Início
       </button>
