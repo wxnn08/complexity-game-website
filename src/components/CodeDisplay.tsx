@@ -18,27 +18,30 @@ SyntaxHighlighter.registerLanguage("java", java);
 interface CodeDisplayProps {
   codeData?: ICode;
   className?: string;
+  height?: string;
 }
 
-export default function CodeDisplay({ codeData, className }: CodeDisplayProps) {
+export default function CodeDisplay({ codeData, className, height }: CodeDisplayProps) {
   if (!codeData) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center">
         <div className="text-lg">Carregando código...</div>
       </div>
     );
   }
 
   return (
-    <SyntaxHighlighter
-      style={oneDark}
-      language={codeData.language}
-      className={`mockup-code h-full overflow-auto ${className || ""}`}
-      showLineNumbers={true}
-      useInlineStyles={true}
-      customStyle={{ fontSize: "0.8rem" }}
-    >
-      {codeData.code}
-    </SyntaxHighlighter>
+    <div className={`overflow-auto ${className || ""}`} style={{ height: height || "16rem" }}>
+      <SyntaxHighlighter
+        style={oneDark}
+        language={codeData.language}
+        className="mockup-code"
+        showLineNumbers={true}
+        useInlineStyles={true}
+        customStyle={{ fontSize: "0.8rem", margin: 0 }}
+      >
+        {codeData.code}
+      </SyntaxHighlighter>
+    </div>
   );
 }

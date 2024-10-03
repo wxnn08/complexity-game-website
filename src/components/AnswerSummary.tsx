@@ -6,13 +6,19 @@ interface AnswerSummaryProps {
   userResponses: UserResponse[];
 }
 
+function formatChoice(choice?: string) {
+  if (choice === "left") return "Esquerda é mais rápido";
+  if (choice === "right") return "Direita é mais rápido";
+  if (choice === "equal") return "Ambos têm a mesma complexidade";
+  return "Resposta desconhecida";
+}
+
 export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
   return (
     <div className="join join-vertical w-full mt-6">
       {userResponses.map((response, index) => {
         const questionNumber = index + 1;
         const isCorrect = response.isCorrect;
-        const borderColor = isCorrect ? "border-green-500" : "border-red-500";
 
         return (
           <div
@@ -21,33 +27,33 @@ export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
           >
             <input type="checkbox" />
             <div className="collapse-title text-xl font-medium">
-              Questão {questionNumber}: {isCorrect ? "Correta" : "Incorreta"}
+              Questão {questionNumber}:
+              <span className={`font-bold ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
+                {isCorrect ? " Correta" : " Incorreta"}
+              </span>
             </div>
             <div className="collapse-content">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-auto mt-4">
-                <div
-                  className={`${
-                    response.userAnswer === "left" ? `border-4 ${borderColor}` : ""
-                  }`}
-                >
-                  <CodeDisplay codeData={response.leftCode} />
-                </div>
-                <div
-                  className={`${
-                    response.userAnswer === "right" ? `border-4 ${borderColor}` : ""
-                  }`}
-                >
-                  <CodeDisplay codeData={response.rightCode} />
-                </div>
-              </div>
               <div className="mt-4">
-                <h4 className="text-lg font-bold">Explicação:</h4>
-                <p className="mt-2">
-                  <strong>Esquerda:</strong> {response.leftCode.explanation}
+                <p>
+                  <strong>Sua escolha:</strong> {formatChoice(response.userAnswer)}
                 </p>
-                <p className="mt-2">
-                  <strong>Direita:</strong> {response.rightCode.explanation}
+                <p>
+                  <strong>Resposta correta:</strong> {formatChoice(response.correctAnswer)}
                 </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4">
+                <div>
+                  <CodeDisplay codeData={response.leftCode} height="16rem" />
+                  <p className="mt-2">
+                    <strong>Explicação:</strong> {response.leftCode.explanation}
+                  </p>
+                </div>
+                <div>
+                  <CodeDisplay codeData={response.rightCode} height="16rem" />
+                  <p className="mt-2">
+                    <strong>Explicação:</strong> {response.rightCode.explanation}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
