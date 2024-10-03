@@ -4,14 +4,14 @@ import GuessingPanel from "./components/GuessingPanel";
 import Navbar from "./components/Navbar";
 import Result from "./components/Result";
 import Home from "./components/Home";
-import { ICode } from "./schemas/ICode";
+import { ICode, UserResponse } from "./schemas/ICode";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 function App() {
   const [gameTime, setGameTime] = useState<number | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [userResponses, setUserResponses] = useState<UserResponse[]>([]);
   const [score, setScore] = useState(0);
   const [playerName, setPlayerName] = useState("");
   const [loadingResult, setLoadingResult] = useState(false);
@@ -19,18 +19,16 @@ function App() {
   const handleGameStart = (selectedTime: number, playerName: string) => {
     setGameTime(selectedTime);
     setGameStarted(true);
-    setAnswers([]);
+    setUserResponses([]);
     setScore(0);
     setPlayerName(playerName);
   };
 
   const onGameEnd = useCallback(
     async (
-      userAnswers: string[],
-      codes: ICode[],
+      userResponses: UserResponse[],
       complexityCost: { complexity: string; cost: number }[]
     ) => {
-      // Cria um mapa de complexidade para custo
       const complexityCostMap = complexityCost.reduce((map, item) => {
         map[item.complexity] = item.cost;
         return map;
@@ -38,12 +36,9 @@ function App() {
 
       let userScore = 0;
 
-      for (let i = 0; i < userAnswers.length; i++) {
-        const leftCode = codes[i];
-        const rightCode = codes[i + 1];
-
-        const leftComplexity = leftCode.time_complexity;
-        const rightComplexity = rightCode.time_complexity;
+      const updatedResponses = userResponses.map((response) => {
+        const leftComplexity = response.leftCode.time_complexity;
+        const rightComplexity = response.rightCode.time_complexity;
 
         const leftCost = complexityCostMap[leftComplexity];
         const rightCost = complexityCostMap[rightComplexity];
@@ -57,15 +52,24 @@ function App() {
           correctAnswer = "equal";
         }
 
-        if (userAnswers[i] === correctAnswer) {
+        const isCorrect = response.userAnswer === correctAnswer;
+        if (isCorrect) {
           userScore += 1;
         }
-      }
 
+        return {
+          ...response,
+          isCorrect,
+          correctAnswer,
+          computedCosts: { leftCost, rightCost },
+        };
+      });
+
+      console.log(updatedResponses);
+      setUserResponses(updatedResponses);
       setLoadingResult(true);
 
       try {
-        // Envia a pontuação para o backend
         await axios.post(`${apiUrl}/api/ranking`, {
           name: playerName,
           score: userScore,
@@ -83,7 +87,7 @@ function App() {
 
   const handleRestart = () => {
     setGameTime(null);
-    setAnswers([]);
+    setUserResponses([]);
     setScore(0);
     setPlayerName("");
   };
@@ -96,7 +100,7 @@ function App() {
       )}
       {!gameStarted && gameTime !== null && (
         <Result
-          answers={answers}
+          userResponses={userResponses}
           onRestart={handleRestart}
           score={score}
           playerName={playerName}
@@ -107,8 +111,8 @@ function App() {
         <GuessingPanel
           gameTime={gameTime}
           onGameEnd={onGameEnd}
-          answers={answers}
-          setAnswers={setAnswers}
+          userResponses={userResponses}
+          setUserResponses={setUserResponses}
         />
       )}
     </>

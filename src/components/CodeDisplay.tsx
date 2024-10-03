@@ -15,7 +15,12 @@ SyntaxHighlighter.registerLanguage("c", c);
 SyntaxHighlighter.registerLanguage("javascript", javascript);
 SyntaxHighlighter.registerLanguage("java", java);
 
-export default function CodeDisplay({ codeData }: { codeData?: ICode }) {
+interface CodeDisplayProps {
+  codeData?: ICode;
+  className?: string;
+}
+
+export default function CodeDisplay({ codeData, className }: CodeDisplayProps) {
   if (!codeData) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -28,7 +33,7 @@ export default function CodeDisplay({ codeData }: { codeData?: ICode }) {
     <SyntaxHighlighter
       style={oneDark}
       language={codeData.language}
-      className="mockup-code h-full overflow-auto"
+      className={`mockup-code h-full overflow-auto ${className || ""}`}
       showLineNumbers={true}
       useInlineStyles={true}
     >
