@@ -36,6 +36,7 @@ export default function CodeDisplay({ codeData, className }: CodeDisplayProps) {
       className={`mockup-code h-full overflow-auto ${className || ""}`}
       showLineNumbers={true}
       useInlineStyles={true}
+      customStyle={{ fontSize: "0.8rem" }}
     >
       {codeData.code}
     </SyntaxHighlighter>

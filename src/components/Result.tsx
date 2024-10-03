@@ -73,9 +73,9 @@ export default function Result({
         <table className="table w-full table-auto">
           <thead>
             <tr>
-              <th className="px-4 py-2">Posição</th>
-              <th className="px-4 py-2">Nome</th>
-              <th className="px-4 py-2">Pontuação</th>
+              <th className="px-2 md:px-4 py-2">Posição</th>
+              <th className="px-2 md:px-4 py-2">Nome</th>
+              <th className="px-2 md:px-4 py-2">Pontuação</th>
             </tr>
           </thead>
           <tbody>
@@ -88,9 +88,13 @@ export default function Result({
                     : ""
                 }
               >
-                <td className="border px-4 py-2 text-center">{index + 1}</td>
-                <td className="border px-4 py-2">{entry.name}</td>
-                <td className="border px-4 py-2 text-center">{entry.score}</td>
+                <td className="border px-2 md:px-4 py-2 text-center">
+                  {index + 1}
+                </td>
+                <td className="border px-2 md:px-4 py-2">{entry.name}</td>
+                <td className="border px-2 md:px-4 py-2 text-center">
+                  {entry.score}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -99,7 +103,7 @@ export default function Result({
 
       <AnswerSummary userResponses={userResponses} />
 
-      <button className="btn btn-primary mt-6" onClick={onRestart}>
+      <button className="btn btn-primary mt-6 mb-4" onClick={onRestart}>
         Voltar ao Início
       </button>
     </div>

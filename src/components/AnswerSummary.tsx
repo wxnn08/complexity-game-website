@@ -15,13 +15,16 @@ export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
         const borderColor = isCorrect ? "border-green-500" : "border-red-500";
 
         return (
-          <div key={index} className="collapse collapse-arrow join-item border border-base-300">
+          <div
+            key={index}
+            className="collapse collapse-arrow join-item border border-base-300"
+          >
             <input type="checkbox" />
             <div className="collapse-title text-xl font-medium">
               Questão {questionNumber}: {isCorrect ? "Correta" : "Incorreta"}
             </div>
             <div className="collapse-content">
-              <div className="grid grid-cols-2 gap-4 w-full h-[70vh] mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-auto mt-4">
                 <div
                   className={`${
                     response.userAnswer === "left" ? `border-4 ${borderColor}` : ""
