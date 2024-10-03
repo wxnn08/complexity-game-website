@@ -28,7 +28,7 @@ export default function Home({ onGameStart }: HomeProps) {
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
       />
-      <p className="text-xl mb-6">Digite o grupo (opcional):</p>
+      {/* Mantemos a caixa de texto para o grupo, mas removemos o texto explicativo */}
       <input
         type="text"
         placeholder="Grupo (opcional)"

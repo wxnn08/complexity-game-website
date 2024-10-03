@@ -121,8 +121,8 @@ export default function GuessingPanel({
       </div>
       <div className="flex-grow flex justify-center items-center mt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12 h-full">
-          <CodeDisplay codeData={codes[index]} />
-          <CodeDisplay codeData={codes[index + 1]} />
+          <CodeDisplay codeData={codes[index]} height="70vh" />
+          <CodeDisplay codeData={codes[index + 1]} height="70vh" />
         </div>
       </div>
       <div className="btm-nav">
