@@ -65,7 +65,6 @@ function App() {
         };
       });
 
-      console.log(updatedResponses);
       setUserResponses(updatedResponses);
       setLoadingResult(true);
 
