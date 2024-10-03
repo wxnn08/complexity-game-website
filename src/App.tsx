@@ -4,7 +4,7 @@ import GuessingPanel from "./components/GuessingPanel";
 import Navbar from "./components/Navbar";
 import Result from "./components/Result";
 import Home from "./components/Home";
-import { ICode, UserResponse } from "./schemas/ICode";
+import { UserResponse } from "./schemas/ICode";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -14,14 +14,16 @@ function App() {
   const [userResponses, setUserResponses] = useState<UserResponse[]>([]);
   const [score, setScore] = useState(0);
   const [playerName, setPlayerName] = useState("");
+  const [groupName, setGroupName] = useState("general");
   const [loadingResult, setLoadingResult] = useState(false);
 
-  const handleGameStart = (selectedTime: number, playerName: string) => {
+  const handleGameStart = (selectedTime: number, playerName: string, groupName: string) => {
     setGameTime(selectedTime);
     setGameStarted(true);
     setUserResponses([]);
     setScore(0);
     setPlayerName(playerName);
+    setGroupName(groupName);
   };
 
   const onGameEnd = useCallback(
@@ -72,6 +74,7 @@ function App() {
         await axios.post(`${apiUrl}/api/ranking`, {
           name: playerName,
           score: userScore,
+          group: groupName,
         });
       } catch (error) {
         console.error("Erro ao atualizar o ranking:", error);
@@ -81,7 +84,7 @@ function App() {
       setGameStarted(false);
       setLoadingResult(false);
     },
-    [playerName]
+    [playerName, groupName]
   );
 
   const handleRestart = () => {
@@ -89,6 +92,7 @@ function App() {
     setUserResponses([]);
     setScore(0);
     setPlayerName("");
+    setGroupName("general");
   };
 
   return (
@@ -103,6 +107,7 @@ function App() {
           onRestart={handleRestart}
           score={score}
           playerName={playerName}
+          groupName={groupName}
           loadingResult={loadingResult}
         />
       )}

@@ -17,3 +17,9 @@ export interface UserResponse {
     rightCost: number;
   };
 }
+
+export interface RankingEntry {
+  name: string;
+  score: number;
+  group?: string;
+}

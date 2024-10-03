@@ -13,6 +13,7 @@ interface ResultProps {
   onRestart: () => void;
   score: number;
   playerName: string;
+  groupName: string;
   loadingResult: boolean;
 }
 
@@ -21,6 +22,7 @@ export default function Result({
   onRestart,
   score,
   playerName,
+  groupName,
   loadingResult,
 }: ResultProps) {
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
@@ -31,7 +33,7 @@ export default function Result({
     if (loadingResult) return;
 
     axios
-      .get(`${apiUrl}/api/ranking`)
+      .get(`${apiUrl}/api/ranking`, { params: { group: groupName } })
       .then((response) => {
         setRanking(response.data.ranking);
         setIsLoading(false);
@@ -40,7 +42,7 @@ export default function Result({
         console.error("Erro ao buscar o ranking:", error);
         setIsLoading(false);
       });
-  }, [loadingResult]);
+  }, [loadingResult, groupName]);
 
   if (isLoading || loadingResult) {
     return (
@@ -68,14 +70,16 @@ export default function Result({
           O tempo acabou antes que você pudesse responder alguma questão.
         </p>
       )}
-      <h3 className="text-2xl font-bold mt-6 mb-4">Ranking</h3>
+      <h3 className="text-2xl font-bold mt-6 mb-4">
+        Ranking - Grupo: {groupName}
+      </h3>
       <div className="overflow-x-auto w-full max-w-2xl mt-4">
-        <table className="table w-full table-auto">
+        <table className="table w-full">
           <thead>
             <tr>
-              <th className="px-2 md:px-4 py-2">Posição</th>
-              <th className="px-2 md:px-4 py-2">Nome</th>
-              <th className="px-2 md:px-4 py-2">Pontuação</th>
+              <th></th>
+              <th>Nome</th>
+              <th>Pontuação</th>
             </tr>
           </thead>
           <tbody>
@@ -83,18 +87,14 @@ export default function Result({
               <tr
                 key={index}
                 className={
-                  entry.name === playerName && entry.score === score
-                    ? "bg-green-200"
+                  entry.name === playerName
+                    ? "active"
                     : ""
                 }
               >
-                <td className="border px-2 md:px-4 py-2 text-center">
-                  {index + 1}
-                </td>
-                <td className="border px-2 md:px-4 py-2">{entry.name}</td>
-                <td className="border px-2 md:px-4 py-2 text-center">
-                  {entry.score}
-                </td>
+                <th>{index + 1}</th>
+                <td>{entry.name}</td>
+                <td>{entry.score}</td>
               </tr>
             ))}
           </tbody>
@@ -103,7 +103,7 @@ export default function Result({
 
       <AnswerSummary userResponses={userResponses} />
 
-      <button className="btn btn-primary mt-6 mb-4" onClick={onRestart}>
+      <button className="btn btn-primary mt-6" onClick={onRestart}>
         Voltar ao Início
       </button>
     </div>
