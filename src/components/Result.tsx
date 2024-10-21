@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { UserResponse } from "../schemas/ICode";
+import { UserResponse, RankingEntry } from "../schemas/ICode";
 import AnswerSummary from "./AnswerSummary";
 
-interface RankingEntry {
-  name: string;
-  score: number;
-}
+// Importar componentes do Recharts
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
 interface ResultProps {
   userResponses: UserResponse[];
@@ -25,7 +31,8 @@ export default function Result({
   groupName,
   loadingResult,
 }: ResultProps) {
-  const [ranking, setRanking] = useState<RankingEntry[]>([]);
+  const [userEvolution, setUserEvolution] = useState<RankingEntry[]>([]);
+  const [generalRanking, setGeneralRanking] = useState<RankingEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -35,14 +42,38 @@ export default function Result({
     axios
       .get(`${apiUrl}/api/ranking`, { params: { group: groupName } })
       .then((response) => {
-        setRanking(response.data.ranking);
+        const rankingData: RankingEntry[] = response.data.ranking;
+
+        // Processar a evolução do usuário
+        const userEvolutionData = rankingData
+          .filter((entry) => entry.name === playerName)
+          .sort(); // Ordenar por data crescente
+
+        setUserEvolution(userEvolutionData);
+
+        // Processar o ranking geral
+        const bestScoresMap = new Map<string, RankingEntry>();
+
+        rankingData.forEach((entry) => {
+          const existingEntry = bestScoresMap.get(entry.name);
+          if (!existingEntry || entry.score > existingEntry.score) {
+            bestScoresMap.set(entry.name, entry);
+          }
+        });
+
+        const generalRankingData = Array.from(bestScoresMap.values()).sort(
+          (a, b) => b.score - a.score
+        );
+
+        setGeneralRanking(generalRankingData);
+
         setIsLoading(false);
       })
       .catch((error) => {
         console.error("Erro ao buscar o ranking:", error);
         setIsLoading(false);
       });
-  }, [loadingResult, groupName]);
+  }, [loadingResult, groupName, playerName]);
 
   if (isLoading || loadingResult) {
     return (
@@ -70,35 +101,70 @@ export default function Result({
           O tempo acabou antes que você pudesse responder alguma questão.
         </p>
       )}
-      <h3 className="text-2xl font-bold mt-6 mb-4">
-        Ranking - Grupo: {groupName}
-      </h3>
-      <div className="overflow-x-auto w-full max-w-2xl mt-4">
-        <table className="table w-full">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Nome</th>
-              <th>Pontuação</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ranking.map((entry, index) => (
-              <tr
-                key={index}
-                className={
-                  entry.name === playerName
-                    ? "active"
-                    : ""
-                }
-              >
-                <th>{index + 1}</th>
-                <td>{entry.name}</td>
-                <td>{entry.score}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      {/* Container para os dois rankings */}
+      <div className="w-full flex flex-col md:flex-row md:space-x-4 mt-6">
+        {/* Evolução do Usuário - Gráfico */}
+        <div className="md:w-1/2 w-full">
+          <h3 className="text-2xl font-bold mb-4">
+            Sua Evolução - Grupo: {groupName}
+          </h3>
+          <div className="w-full h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={userEvolution}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="timestamp"
+                  tickFormatter={(tick) =>
+                    new Date(tick).toLocaleDateString()
+                  }
+                />
+                <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
+                <Tooltip
+                  labelFormatter={(label) =>
+                    `Data: ${new Date(label).toLocaleString()}`
+                  }
+                />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#8884d8"
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Ranking Geral */}
+        <div className="md:w-1/2 w-full mt-6 md:mt-0">
+          <h3 className="text-2xl font-bold mb-4">
+            Ranking Geral - Grupo: {groupName}
+          </h3>
+          <div className="overflow-x-auto w-full">
+            <table className="table w-full">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nome</th>
+                  <th>Pontuação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {generalRanking.map((entry, index) => (
+                  <tr
+                    key={index}
+                    className={entry.name === playerName ? "active" : ""}
+                  >
+                    <td>{index + 1}</td>
+                    <td>{entry.name}</td>
+                    <td>{entry.score}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <AnswerSummary userResponses={userResponses} />
