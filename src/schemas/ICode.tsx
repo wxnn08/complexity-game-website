@@ -21,5 +21,6 @@ export interface UserResponse {
 export interface RankingEntry {
   name: string;
   score: number;
-  group?: string;
+  group: string;
+  timestamp: string;
 }

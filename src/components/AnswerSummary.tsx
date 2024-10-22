@@ -1,6 +1,8 @@
 import React from "react";
 import { UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface AnswerSummaryProps {
   userResponses: UserResponse[];
@@ -44,15 +46,27 @@ export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4">
                 <div>
                   <CodeDisplay codeData={response.leftCode} height="16rem" />
-                  <p className="mt-2">
-                    <strong>Explicação:</strong> {response.leftCode.explanation}
-                  </p>
+                  <div className="mt-2">
+                    <strong>Explicação:</strong>
+                    <ReactMarkdown
+                      className="prose mt-2"
+                      remarkPlugins={[remarkGfm]}
+                    >
+                      {response.leftCode.explanation}
+                    </ReactMarkdown>
+                  </div>
                 </div>
                 <div>
                   <CodeDisplay codeData={response.rightCode} height="16rem" />
-                  <p className="mt-2">
-                    <strong>Explicação:</strong> {response.rightCode.explanation}
-                  </p>
+                  <div className="mt-2">
+                    <strong>Explicação:</strong>
+                    <ReactMarkdown
+                      className="prose mt-2"
+                      remarkPlugins={[remarkGfm]}
+                    >
+                      {response.rightCode.explanation}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
             </div>
