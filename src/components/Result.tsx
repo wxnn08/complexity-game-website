@@ -3,7 +3,6 @@ import axios from "axios";
 import { UserResponse, RankingEntry } from "../schemas/ICode";
 import AnswerSummary from "./AnswerSummary";
 
-// Importar componentes do Recharts
 import {
   ResponsiveContainer,
   LineChart,
@@ -44,14 +43,12 @@ export default function Result({
       .then((response) => {
         const rankingData: RankingEntry[] = response.data.ranking;
 
-        // Processar a evolução do usuário
         const userEvolutionData = rankingData
           .filter((entry) => entry.name === playerName)
-          .sort(); // Ordenar por data crescente
+          .sort();
 
         setUserEvolution(userEvolutionData);
 
-        // Processar o ranking geral
         const bestScoresMap = new Map<string, RankingEntry>();
 
         rankingData.forEach((entry) => {
@@ -102,9 +99,7 @@ export default function Result({
         </p>
       )}
 
-      {/* Container para os dois rankings */}
       <div className="w-full flex flex-col md:flex-row md:space-x-4 mt-6">
-        {/* Evolução do Usuário - Gráfico */}
         <div className="md:w-1/2 w-full">
           <h3 className="text-2xl font-bold mb-4">
             Sua Evolução - Grupo: {groupName}
@@ -136,7 +131,6 @@ export default function Result({
           </div>
         </div>
 
-        {/* Ranking Geral */}
         <div className="md:w-1/2 w-full mt-6 md:mt-0">
           <h3 className="text-2xl font-bold mb-4">
             Ranking Geral - Grupo: {groupName}

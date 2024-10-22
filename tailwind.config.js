@@ -8,6 +8,6 @@ module.exports = {
   },
   plugins: [
     require('daisyui'),
-    require('@tailwindcss/typography'), // Adicionado o plugin
+    require('@tailwindcss/typography'),
   ],
 }
