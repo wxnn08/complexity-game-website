@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
 
@@ -36,24 +36,27 @@ export default function GuessingPanel({
     userResponsesRef.current = userResponses;
   }, [userResponses]);
 
-  const handleButtonClick = (selected: string) => {
-    const newResponse: UserResponse = {
-      leftCode: codes[index],
-      rightCode: codes[index + 1],
-      userAnswer: selected,
-    };
-    setUserResponses((prevResponses) => [...prevResponses, newResponse]);
-    if (index + 3 >= codes.length) {
-      setIsSubmitting(true);
-      onGameEnd(userResponsesRef.current, complexityCost);
-    } else {
-      setIndex(index + 2);
-    }
-  };
+  const handleButtonClick = useCallback(
+    (selected: string) => {
+      const newResponse: UserResponse = {
+        leftCode: codes[index],
+        rightCode: codes[index + 1],
+        userAnswer: selected,
+      };
+      setUserResponses((prevResponses) => [...prevResponses, newResponse]);
+      if (index + 3 >= codes.length) {
+        setIsSubmitting(true);
+        onGameEnd(userResponsesRef.current, complexityCost);
+      } else {
+        setIndex(index + 2);
+      }
+    },
+    [codes, index, onGameEnd, complexityCost, setUserResponses]
+  );
 
   useEffect(() => {
     axios
-      .get(`${apiUrl}/api/code/20`)
+      .get(`${apiUrl}/api/code/30`)
       .then((response) => {
         setCodes(response.data.codes);
         setComplexityCost(response.data["complexity-cost"]);
@@ -75,6 +78,26 @@ export default function GuessingPanel({
     return () => clearTimeout(timer);
   }, [timeLeft, isLoading]);
 
+  useEffect(() => {
+    if (isLoading || isSubmitting) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === '1') {
+        handleButtonClick('left');
+      } else if (event.key === '2') {
+        handleButtonClick('equal');
+      } else if (event.key === '3') {
+        handleButtonClick('right');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleButtonClick, isLoading, isSubmitting]);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
       .toString()
@@ -87,7 +110,7 @@ export default function GuessingPanel({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-base-200">
         <div className="text-2xl font-bold mb-4">Carregando...</div>
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 rounded-full animate-spin border-4 border-solid border-primary border-t-transparent"></div>
@@ -98,7 +121,7 @@ export default function GuessingPanel({
 
   if (isSubmitting) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-base-200">
         <div className="text-2xl font-bold mb-4">Finalizando...</div>
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 rounded-full animate-spin border-4 border-solid border-primary border-t-transparent"></div>
@@ -108,9 +131,9 @@ export default function GuessingPanel({
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex flex-col justify-center items-center mt-4">
-        <div className="text-2xl font-bold mb-2">
+    <div className="flex flex-col min-h-screen bg-base-200 pt-4">
+      <div className="flex flex-col items-center mt-2">
+        <div className="text-2xl font-bold mb-1">
           Tempo restante: {formatTime(timeLeft)}
         </div>
         <progress
@@ -119,57 +142,41 @@ export default function GuessingPanel({
           max="100"
         ></progress>
       </div>
-      <div className="flex-grow flex justify-center items-center mt-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12 h-full">
-          <CodeDisplay codeData={codes[index]} height="70vh" />
-          <CodeDisplay codeData={codes[index + 1]} height="70vh" />
+      <div className="flex-grow flex justify-center items-start mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
+          <div className="card shadow-xl bg-base-100">
+            <div className="card-body p-4">
+              <CodeDisplay codeData={codes[index]} height="60vh" />
+            </div>
+          </div>
+          <div className="card shadow-xl bg-base-100">
+            <div className="card-body p-4">
+              <CodeDisplay codeData={codes[index + 1]} height="60vh" />
+            </div>
+          </div>
         </div>
       </div>
-      <div className="btm-nav">
+      <div className="btm-nav bg-base-100 shadow-xl">
         <button
           onClick={() => handleButtonClick("left")}
-          className="text-primary bg-primary text-white"
+          className="btn btn-primary flex-1 mx-1"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            stroke="none"
-          >
-            <path d="M15 19l-7-7 7-7" />
-          </svg>
-          <span className="btm-nav-label">Esquerda é mais rápido</span>
+          <span className="hidden sm:inline">Esquerda é mais rápido (1)</span>
+          <span className="sm:hidden">Esquerda (1)</span>
         </button>
         <button
           onClick={() => handleButtonClick("equal")}
-          className="text-accent bg-accent text-white"
+          className="btn btn-accent flex-1 mx-1"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            stroke="none"
-          >
-            <path d="M5 10h14M5 14h14" />
-          </svg>
-          <span className="btm-nav-label">São iguais</span>
+          <span className="hidden sm:inline">São iguais (2)</span>
+          <span className="sm:hidden">Iguais (2)</span>
         </button>
         <button
           onClick={() => handleButtonClick("right")}
-          className="text-secondary bg-secondary text-white"
+          className="btn btn-secondary flex-1 mx-1"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            stroke="none"
-          >
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="btm-nav-label">Direita é mais rápido</span>
+          <span className="hidden sm:inline">Direita é mais rápido (3)</span>
+          <span className="sm:hidden">Direita (3)</span>
         </button>
       </div>
     </div>

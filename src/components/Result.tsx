@@ -45,7 +45,10 @@ export default function Result({
 
         const userEvolutionData = rankingData
           .filter((entry) => entry.name === playerName)
-          .sort();
+          .sort(
+            (a, b) =>
+              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
 
         setUserEvolution(userEvolutionData);
 
@@ -74,7 +77,7 @@ export default function Result({
 
   if (isLoading || loadingResult) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-base-200">
         <div className="text-2xl font-bold mb-4">Carregando resultados...</div>
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 rounded-full animate-spin border-4 border-solid border-primary border-t-transparent"></div>
@@ -85,85 +88,102 @@ export default function Result({
 
   return (
     <div className="flex flex-col items-center mt-4 w-full px-4">
-      <h2 className="text-3xl font-bold mb-4">Resultado</h2>
-      {userResponses.length > 0 ? (
-        <>
-          <p className="text-xl">
-            Você respondeu {userResponses.length} questões!
-          </p>
-          <p className="text-xl mb-4">Sua pontuação: {score}</p>
-        </>
-      ) : (
-        <p className="text-xl">
-          O tempo acabou antes que você pudesse responder alguma questão.
-        </p>
-      )}
+      <div className="card w-full bg-base-100 shadow-xl mb-6">
+        <div className="card-body items-center text-center">
+          <h2 className="card-title text-3xl">Resultado</h2>
+          {userResponses.length > 0 ? (
+            <>
+              <p className="text-xl">
+                Você respondeu {userResponses.length} questões!
+              </p>
+              <p className="text-xl">Sua pontuação: {score}</p>
+            </>
+          ) : (
+            <p className="text-xl">
+              O tempo acabou antes que você pudesse responder alguma questão.
+            </p>
+          )}
+          <div className="card-actions mt-4">
+            <button className="btn btn-primary" onClick={onRestart}>
+              Jogar Novamente
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <div className="w-full flex flex-col md:flex-row md:space-x-4 mt-6">
-        <div className="md:w-1/2 w-full">
-          <h3 className="text-2xl font-bold mb-4">
-            Sua Evolução - Grupo: {groupName}
-          </h3>
-          <div className="w-full h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={userEvolution}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="timestamp"
-                  tickFormatter={(tick) =>
-                    new Date(tick).toLocaleDateString()
-                  }
-                />
-                <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
-                <Tooltip
-                  labelFormatter={(label) =>
-                    `Data: ${new Date(label).toLocaleString()}`
-                  }
-                />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  stroke="#8884d8"
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="w-full flex flex-col md:flex-row md:space-x-4 mt-4">
+        <div className="md:w-1/2 w-full mb-6 md:mb-0">
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h3 className="card-title text-2xl">
+                Sua Evolução - Grupo: {groupName}
+              </h3>
+              <div className="w-full h-64 mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={userEvolution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="timestamp"
+                      tickFormatter={(tick) =>
+                        new Date(tick).toLocaleDateString()
+                      }
+                    />
+                    <YAxis domain={[0, "dataMax + 1"]} allowDecimals={false} />
+                    <Tooltip
+                      labelFormatter={(label) =>
+                        `Data: ${new Date(label).toLocaleString()}`
+                      }
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="md:w-1/2 w-full mt-6 md:mt-0">
-          <h3 className="text-2xl font-bold mb-4">
-            Ranking Geral - Grupo: {groupName}
-          </h3>
-          <div className="overflow-x-auto w-full">
-            <table className="table w-full">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nome</th>
-                  <th>Pontuação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {generalRanking.map((entry, index) => (
-                  <tr
-                    key={index}
-                    className={entry.name === playerName ? "active" : ""}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{entry.name}</td>
-                    <td>{entry.score}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="md:w-1/2 w-full">
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h3 className="card-title text-2xl">
+                Ranking Geral - Grupo: {groupName}
+              </h3>
+              <div className="overflow-x-auto mt-4">
+                <table className="table w-full">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Nome</th>
+                      <th>Pontuação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {generalRanking.map((entry, index) => (
+                      <tr
+                        key={index}
+                        className={entry.name === playerName ? "active" : ""}
+                      >
+                        <td>{index + 1}</td>
+                        <td>{entry.name}</td>
+                        <td>{entry.score}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <AnswerSummary userResponses={userResponses} />
 
-      <button className="btn btn-primary mt-6" onClick={onRestart}>
+      <button className="btn btn-secondary mt-6 mb-4" onClick={onRestart}>
         Voltar ao Início
       </button>
     </div>

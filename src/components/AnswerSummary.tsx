@@ -17,7 +17,7 @@ function formatChoice(choice?: string) {
 
 export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
   return (
-    <div className="join join-vertical w-full mt-6">
+    <div className="collapse-group w-full mt-6">
       {userResponses.map((response, index) => {
         const questionNumber = index + 1;
         const isCorrect = response.isCorrect;
@@ -25,12 +25,12 @@ export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
         return (
           <div
             key={index}
-            className="collapse collapse-arrow join-item border border-base-300"
+            className={`collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-4`}
           >
-            <input type="checkbox" />
-            <div className="collapse-title text-xl font-medium">
+            <input type="checkbox" className="peer" />
+            <div className="collapse-title text-xl font-medium flex items-center">
               Questão {questionNumber}:
-              <span className={`font-bold ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
+              <span className={`ml-2 font-bold ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
                 {isCorrect ? " Correta" : " Incorreta"}
               </span>
             </div>
@@ -44,28 +44,32 @@ export default function AnswerSummary({ userResponses }: AnswerSummaryProps) {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4">
-                <div>
-                  <CodeDisplay codeData={response.leftCode} height="16rem" />
-                  <div className="mt-2">
-                    <strong>Explicação:</strong>
-                    <ReactMarkdown
-                      className="prose mt-2"
-                      remarkPlugins={[remarkGfm]}
-                    >
-                      {response.leftCode.explanation}
-                    </ReactMarkdown>
+                <div className="card shadow-md bg-base-200">
+                  <div className="card-body">
+                    <CodeDisplay codeData={response.leftCode} height="16rem" />
+                    <div className="mt-2">
+                      <strong>Explicação:</strong>
+                      <ReactMarkdown
+                        className="prose mt-2"
+                        remarkPlugins={[remarkGfm]}
+                      >
+                        {response.leftCode.explanation}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <CodeDisplay codeData={response.rightCode} height="16rem" />
-                  <div className="mt-2">
-                    <strong>Explicação:</strong>
-                    <ReactMarkdown
-                      className="prose mt-2"
-                      remarkPlugins={[remarkGfm]}
-                    >
-                      {response.rightCode.explanation}
-                    </ReactMarkdown>
+                <div className="card shadow-md bg-base-200">
+                  <div className="card-body">
+                    <CodeDisplay codeData={response.rightCode} height="16rem" />
+                    <div className="mt-2">
+                      <strong>Explicação:</strong>
+                      <ReactMarkdown
+                        className="prose mt-2"
+                        remarkPlugins={[remarkGfm]}
+                      >
+                        {response.rightCode.explanation}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               </div>
