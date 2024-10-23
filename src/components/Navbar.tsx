@@ -21,7 +21,7 @@ export default function Navbar() {
   return (
     <nav className="navbar bg-base-100 px-4">
       <div className="flex-1">
-        <a className="btn btn-ghost normal-case text-xl">Complexity Game</a>
+        <a className="btn btn-ghost normal-case text-xl">Big-O Battle</a>
       </div>
       <div className="flex-none">
         <select

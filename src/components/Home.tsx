@@ -21,7 +21,7 @@ export default function Home({ onGameStart }: HomeProps) {
     <div className="flex flex-col items-center min-h-screen bg-base-200 pt-8">
       <div className="card shadow-xl w-full max-w-md bg-base-100 mt-10">
         <div className="card-body">
-          <p className="text-xl mb-6 text-center">Complexity Game</p>
+          <p className="text-xl mb-6 text-center">Big-O Battle</p>
           <input
             type="text"
             placeholder="Seu nome"
