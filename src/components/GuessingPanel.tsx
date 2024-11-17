@@ -2,6 +2,9 @@ import axios from "axios";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper as SwiperType } from "swiper/types";
+import 'swiper/css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -29,6 +32,7 @@ export default function GuessingPanel({
     { complexity: string; cost: number }[]
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const userResponsesRef = useRef(userResponses);
 
@@ -49,6 +53,7 @@ export default function GuessingPanel({
         onGameEnd(userResponsesRef.current, complexityCost);
       } else {
         setIndex(index + 2);
+        setTabIndex(0);
       }
     },
     [codes, index, onGameEnd, complexityCost, setUserResponses]
@@ -76,7 +81,7 @@ export default function GuessingPanel({
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, isLoading]);
+  }, [timeLeft, isLoading, onGameEnd, complexityCost]);
 
   useEffect(() => {
     if (isLoading || isSubmitting) return;
@@ -142,7 +147,9 @@ export default function GuessingPanel({
           max="100"
         ></progress>
       </div>
-      <div className="flex-grow flex justify-center items-start mt-8">
+
+      {/* Lado a lado em telas maiores */}
+      <div className="hidden md:flex flex-grow justify-center items-start mt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
           <div className="card shadow-xl bg-base-100">
             <div className="card-body p-4">
@@ -156,6 +163,34 @@ export default function GuessingPanel({
           </div>
         </div>
       </div>
+
+      {/* Swipe para alternar entre os códigos em telas pequenas */}
+      <div className="md:hidden flex-grow mt-8">
+        <Swiper
+          onSlideChange={(swiper: SwiperType) => setTabIndex(swiper.activeIndex)}
+          initialSlide={tabIndex}
+        >
+          <SwiperSlide>
+            <div className="p-4">
+              <div className="card shadow-xl bg-base-100">
+                <div className="card-body p-4">
+                  <CodeDisplay codeData={codes[index]} height="60vh" />
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="p-4">
+              <div className="card shadow-xl bg-base-100">
+                <div className="card-body p-4">
+                  <CodeDisplay codeData={codes[index + 1]} height="60vh" />
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+
       <div className="btm-nav bg-base-100 shadow-xl">
         <button
           onClick={() => handleButtonClick("left")}
