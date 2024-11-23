@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from "react";
 import axios from "axios";
-import GuessingPanel from "./components/GuessingPanel";
 import Navbar from "./components/Navbar";
-import Result from "./components/Result";
 import Home from "./components/Home";
+import GuessingPanel from "./components/GuessingPanel";
+import Result from "./components/Result";
 import { UserResponse } from "./schemas/ICode";
+import { FontSizeProvider } from "./contexts/FontSizeContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -17,7 +19,11 @@ function App() {
   const [groupName, setGroupName] = useState("general");
   const [loadingResult, setLoadingResult] = useState(false);
 
-  const handleGameStart = (selectedTime: number, playerName: string, groupName: string) => {
+  const handleGameStart = (
+    selectedTime: number,
+    playerName: string,
+    groupName: string
+  ) => {
     setGameTime(selectedTime);
     setGameStarted(true);
     setUserResponses([]);
@@ -96,30 +102,34 @@ function App() {
   };
 
   return (
-    <>
-      <Navbar />
-      {!gameStarted && gameTime === null && (
-        <Home onGameStart={handleGameStart} />
-      )}
-      {!gameStarted && gameTime !== null && (
-        <Result
-          userResponses={userResponses}
-          onRestart={handleRestart}
-          score={score}
-          playerName={playerName}
-          groupName={groupName}
-          loadingResult={loadingResult}
-        />
-      )}
-      {gameStarted && gameTime && (
-        <GuessingPanel
-          gameTime={gameTime}
-          onGameEnd={onGameEnd}
-          userResponses={userResponses}
-          setUserResponses={setUserResponses}
-        />
-      )}
-    </>
+    <ThemeProvider>
+      <FontSizeProvider>
+        <>
+          <Navbar />
+          {!gameStarted && gameTime === null && (
+            <Home onGameStart={handleGameStart} />
+          )}
+          {!gameStarted && gameTime !== null && (
+            <Result
+              userResponses={userResponses}
+              onRestart={handleRestart}
+              score={score}
+              playerName={playerName}
+              groupName={groupName}
+              loadingResult={loadingResult}
+            />
+          )}
+          {gameStarted && gameTime && (
+            <GuessingPanel
+              gameTime={gameTime}
+              onGameEnd={onGameEnd}
+              userResponses={userResponses}
+              setUserResponses={setUserResponses}
+            />
+          )}
+        </>
+      </FontSizeProvider>
+    </ThemeProvider>
   );
 }
 

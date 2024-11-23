@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -40,24 +40,22 @@ export default function GuessingPanel({
     userResponsesRef.current = userResponses;
   }, [userResponses]);
 
-  const handleButtonClick = useCallback(
-    (selected: string) => {
-      const newResponse: UserResponse = {
-        leftCode: codes[index],
-        rightCode: codes[index + 1],
-        userAnswer: selected,
-      };
-      setUserResponses((prevResponses) => [...prevResponses, newResponse]);
-      if (index + 3 >= codes.length) {
-        setIsSubmitting(true);
-        onGameEnd(userResponsesRef.current, complexityCost);
-      } else {
-        setIndex(index + 2);
-        setTabIndex(0);
-      }
-    },
-    [codes, index, onGameEnd, complexityCost, setUserResponses]
-  );
+  const handleButtonClick = (selected: string) => {
+    const newResponse: UserResponse = {
+      leftCode: codes[index],
+      rightCode: codes[index + 1],
+      userAnswer: selected,
+    };
+    const updatedResponses = [...userResponsesRef.current, newResponse];
+    setUserResponses(updatedResponses);
+    if (index + 3 >= codes.length) {
+      setIsSubmitting(true);
+      onGameEnd(updatedResponses, complexityCost);
+    } else {
+      setIndex(index + 2);
+      setTabIndex(0);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -101,7 +99,7 @@ export default function GuessingPanel({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleButtonClick, isLoading, isSubmitting]);
+  }, [isLoading, isSubmitting, handleButtonClick]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -148,7 +146,6 @@ export default function GuessingPanel({
         ></progress>
       </div>
 
-      {/* Lado a lado em telas maiores */}
       <div className="hidden md:flex flex-grow justify-center items-start mt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
           <div className="card shadow-xl bg-base-100">
@@ -164,11 +161,12 @@ export default function GuessingPanel({
         </div>
       </div>
 
-      {/* Swipe para alternar entre os códigos em telas pequenas */}
       <div className="md:hidden flex-grow mt-8">
         <Swiper
           onSlideChange={(swiper: SwiperType) => setTabIndex(swiper.activeIndex)}
           initialSlide={tabIndex}
+          touchStartPreventDefault={false}
+          noSwiping={false}
         >
           <SwiperSlide>
             <div className="p-4">
