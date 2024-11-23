@@ -96,7 +96,7 @@ export default function GuessingPanel({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isLoading, isSubmitting, handleButtonClick]);
+  }, [isLoading, isSubmitting]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -143,72 +143,81 @@ export default function GuessingPanel({
         ></progress>
       </div>
 
-      {/* Lado a lado em telas maiores */}
-      <div className="hidden md:flex flex-grow justify-center items-start mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
-          <div className="card shadow-xl bg-base-100">
-            <div className="card-body p-4">
-              <CodeDisplay codeData={codes[index]} height="60vh" />
+      {/* Área de exibição de código */}
+      <div className="flex-grow flex flex-col mt-4">
+        {/* Telas grandes: exibir ambos os códigos lado a lado */}
+        <div className="hidden md:flex flex-grow justify-center items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
+            <div className="card shadow-xl bg-base-100">
+              <div className="card-body p-4">
+                <CodeDisplay codeData={codes[index]} height="60vh" />
+              </div>
+            </div>
+            <div className="card shadow-xl bg-base-100">
+              <div className="card-body p-4">
+                <CodeDisplay codeData={codes[index + 1]} height="60vh" />
+              </div>
             </div>
           </div>
-          <div className="card shadow-xl bg-base-100">
-            <div className="card-body p-4">
-              <CodeDisplay codeData={codes[index + 1]} height="60vh" />
+        </div>
+
+        {/* Telas pequenas: exibir um código por vez */}
+        <div className="md:hidden flex-grow flex flex-col">
+          <div className="flex-grow p-4">
+            <div className="card shadow-xl bg-base-100 h-full">
+              <div className="card-body p-4">
+                <CodeDisplay
+                  codeData={currentCodeSide === 'left' ? codes[index] : codes[index + 1]}
+                  height="60vh"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Alternar entre códigos em telas pequenas */}
-      <div className="md:hidden flex-grow mt-8">
-        <div className="p-4">
-          <div className="card shadow-xl bg-base-100">
-            <div className="card-body p-4">
-              <CodeDisplay
-                codeData={currentCodeSide === 'left' ? codes[index] : codes[index + 1]}
-                height="60vh"
-              />
-            </div>
-          </div>
-          <div className="flex justify-between mt-4">
-            <button
-              onClick={() => setCurrentCodeSide('left')}
-              className={`btn ${currentCodeSide === 'left' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
-            >
-              Esquerda
-            </button>
-            <button
-              onClick={() => setCurrentCodeSide('right')}
-              className={`btn ${currentCodeSide === 'right' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
-            >
-              Direita
-            </button>
-          </div>
+      {/* Botões fixados na parte inferior */}
+      <div className="fixed bottom-0 left-0 right-0 bg-base-100">
+        {/* Botões para alternar entre códigos, apenas em telas pequenas */}
+        <div className="md:hidden flex justify-between p-2">
+          <button
+            onClick={() => setCurrentCodeSide('left')}
+            className={`btn ${currentCodeSide === 'left' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
+          >
+            Código 1
+          </button>
+          <button
+            onClick={() => setCurrentCodeSide('right')}
+            className={`btn ${currentCodeSide === 'right' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
+          >
+            Código 2
+          </button>
         </div>
-      </div>
 
-      <div className="btm-nav bg-base-100 shadow-xl">
-        <button
-          onClick={() => handleButtonClick("left")}
-          className="btn btn-primary flex-1 mx-1"
-        >
-          <span className="hidden sm:inline">Esquerda é mais rápido (1)</span>
-          <span className="sm:hidden">Esquerda (1)</span>
-        </button>
-        <button
-          onClick={() => handleButtonClick("equal")}
-          className="btn btn-accent flex-1 mx-1"
-        >
-          <span className="hidden sm:inline">São iguais (2)</span>
-          <span className="sm:hidden">Iguais (2)</span>
-        </button>
-        <button
-          onClick={() => handleButtonClick("right")}
-          className="btn btn-secondary flex-1 mx-1"
-        >
-          <span className="hidden sm:inline">Direita é mais rápido (3)</span>
-          <span className="sm:hidden">Direita (3)</span>
-        </button>
+        {/* Botões de resposta */}
+        <div className="flex justify-between p-2">
+          <button
+            onClick={() => handleButtonClick("left")}
+            className="btn btn-primary flex-1 mx-1"
+          >
+            <span className="hidden sm:inline">Esquerda é mais rápido (1)</span>
+            <span className="sm:hidden">Esquerda (1)</span>
+          </button>
+          <button
+            onClick={() => handleButtonClick("equal")}
+            className="btn btn-accent flex-1 mx-1"
+          >
+            <span className="hidden sm:inline">São iguais (2)</span>
+            <span className="sm:hidden">Iguais (2)</span>
+          </button>
+          <button
+            onClick={() => handleButtonClick("right")}
+            className="btn btn-secondary flex-1 mx-1"
+          >
+            <span className="hidden sm:inline">Direita é mais rápido (3)</span>
+            <span className="sm:hidden">Direita (3)</span>
+          </button>
+        </div>
       </div>
     </div>
   );
