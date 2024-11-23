@@ -143,9 +143,7 @@ export default function GuessingPanel({
         ></progress>
       </div>
 
-      {/* Área de exibição de código */}
       <div className="flex-grow flex flex-col mt-4">
-        {/* Telas grandes: exibir ambos os códigos lado a lado */}
         <div className="hidden md:flex flex-grow justify-center items-start">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
             <div className="card shadow-xl bg-base-100">
@@ -161,7 +159,6 @@ export default function GuessingPanel({
           </div>
         </div>
 
-        {/* Telas pequenas: exibir um código por vez */}
         <div className="md:hidden flex-grow flex flex-col">
           <div className="flex-grow p-4">
             <div className="card shadow-xl bg-base-100 h-full">
@@ -176,9 +173,7 @@ export default function GuessingPanel({
         </div>
       </div>
 
-      {/* Botões fixados na parte inferior */}
       <div className="fixed bottom-0 left-0 right-0 bg-base-100">
-        {/* Botões para alternar entre códigos, apenas em telas pequenas */}
         <div className="md:hidden flex justify-between p-2">
           <button
             onClick={() => setCurrentCodeSide('left')}
@@ -194,7 +189,6 @@ export default function GuessingPanel({
           </button>
         </div>
 
-        {/* Botões de resposta */}
         <div className="flex justify-between p-2">
           <button
             onClick={() => handleButtonClick("left")}
