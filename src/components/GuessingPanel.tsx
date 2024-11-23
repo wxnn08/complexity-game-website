@@ -2,9 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Swiper as SwiperType } from "swiper/types";
-import 'swiper/css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -32,7 +29,7 @@ export default function GuessingPanel({
     { complexity: string; cost: number }[]
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tabIndex, setTabIndex] = useState(0);
+  const [currentCodeSide, setCurrentCodeSide] = useState<'left' | 'right'>('left');
 
   const userResponsesRef = useRef(userResponses);
 
@@ -53,7 +50,7 @@ export default function GuessingPanel({
       onGameEnd(updatedResponses, complexityCost);
     } else {
       setIndex(index + 2);
-      setTabIndex(0);
+      setCurrentCodeSide('left');
     }
   };
 
@@ -146,6 +143,7 @@ export default function GuessingPanel({
         ></progress>
       </div>
 
+      {/* Lado a lado em telas maiores */}
       <div className="hidden md:flex flex-grow justify-center items-start mt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
           <div className="card shadow-xl bg-base-100">
@@ -161,32 +159,32 @@ export default function GuessingPanel({
         </div>
       </div>
 
+      {/* Alternar entre códigos em telas pequenas */}
       <div className="md:hidden flex-grow mt-8">
-        <Swiper
-          onSlideChange={(swiper: SwiperType) => setTabIndex(swiper.activeIndex)}
-          initialSlide={tabIndex}
-          touchStartPreventDefault={false}
-          noSwiping={false}
-        >
-          <SwiperSlide>
-            <div className="p-4">
-              <div className="card shadow-xl bg-base-100">
-                <div className="card-body p-4">
-                  <CodeDisplay codeData={codes[index]} height="60vh" />
-                </div>
-              </div>
+        <div className="p-4">
+          <div className="card shadow-xl bg-base-100">
+            <div className="card-body p-4">
+              <CodeDisplay
+                codeData={currentCodeSide === 'left' ? codes[index] : codes[index + 1]}
+                height="60vh"
+              />
             </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="p-4">
-              <div className="card shadow-xl bg-base-100">
-                <div className="card-body p-4">
-                  <CodeDisplay codeData={codes[index + 1]} height="60vh" />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
+          </div>
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={() => setCurrentCodeSide('left')}
+              className={`btn ${currentCodeSide === 'left' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
+            >
+              Esquerda
+            </button>
+            <button
+              onClick={() => setCurrentCodeSide('right')}
+              className={`btn ${currentCodeSide === 'right' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
+            >
+              Direita
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="btm-nav bg-base-100 shadow-xl">
