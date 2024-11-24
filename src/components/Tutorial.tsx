@@ -5,6 +5,8 @@ import remarkGfm from "remark-gfm";
 export default function Tutorial() {
   const comoJogarContent = `
 
+## Como jogar
+
 1. **Iniciar o jogo:**
    - Na tela inicial, insira seu nome e, opcionalmente, o nome de um grupo. O grupo se refere a qual ranking você estará competindo.
    - Clique em **Jogar** para começar.
@@ -29,6 +31,9 @@ export default function Tutorial() {
 `;
 
   const comoIdentificarContent = `
+___
+
+## Guia rápido para análise da complexidade
 
 ### 1. **Entenda a operação dominante**
 
@@ -138,35 +143,19 @@ def merge_sort(lista):
   return (
     <div className="flex flex-col items-center min-h-screen p-4">
       <div className="w-full max-w-3xl bg-base-100 p-6 rounded-lg shadow-lg">
-        <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-4">
-          <input type="checkbox" className="peer" />
-          <div className="collapse-title text-xl font-bold">
-            Como Jogar
-          </div>
-          <div className="collapse-content">
-            <ReactMarkdown
-              className="prose text-base"
-              remarkPlugins={[remarkGfm]}
-            >
-              {comoJogarContent.replace(/`/g, "~")}
-            </ReactMarkdown>
-          </div>
-        </div>
+        <ReactMarkdown
+          className="prose text-base mb-8"
+          remarkPlugins={[remarkGfm]}
+        >
+          {comoJogarContent.replace(/`/g, "~")}
+        </ReactMarkdown>
 
-        <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
-          <input type="checkbox" className="peer" />
-          <div className="collapse-title text-xl font-bold">
-            Como Identificar a Complexidade de Algoritmos
-          </div>
-          <div className="collapse-content">
-            <ReactMarkdown
-              className="prose text-base"
-              remarkPlugins={[remarkGfm]}
-            >
-              {comoIdentificarContent.replace(/`/g, "~")}
-            </ReactMarkdown>
-          </div>
-        </div>
+        <ReactMarkdown
+          className="prose text-base"
+          remarkPlugins={[remarkGfm]}
+        >
+          {comoIdentificarContent.replace(/`/g, "~")}
+        </ReactMarkdown>
       </div>
     </div>
   );
