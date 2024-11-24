@@ -9,9 +9,9 @@ interface AnswerSummaryProps {
 }
 
 function formatChoice(choice?: string) {
-  if (choice === "left") return "Esquerda é mais rápido";
-  if (choice === "right") return "Direita é mais rápido";
-  if (choice === "equal") return "Ambos têm a mesma complexidade";
+  if (choice === "left") return "Primeiro é mais rápido";
+  if (choice === "right") return "Segundo é mais rápido";
+  if (choice === "equal") return "São iguais";
   return "Resposta desconhecida";
 }
 

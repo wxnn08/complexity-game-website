@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { duotoneLight, duotoneDark} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import clojure from "react-syntax-highlighter/dist/cjs/languages/prism/clojure";
 import python from "react-syntax-highlighter/dist/cjs/languages/prism/python";
 import cpp from "react-syntax-highlighter/dist/cjs/languages/prism/cpp";
@@ -35,20 +35,14 @@ export default function CodeDisplay({ codeData, className, height }: CodeDisplay
   }
 
   return (
-    <div
-      className={`overflow-auto ${className || ""}`}
-      style={{ height: height || "16rem", touchAction: 'pan-y' }}
-    >
       <SyntaxHighlighter
-        style={oneDark}
+        style={duotoneDark}
         language={codeData.language}
-        className="mockup-code"
         showLineNumbers={true}
-        useInlineStyles={true}
-        customStyle={{ fontSize: `${fontSize}px`, margin: 0 }}
+        customStyle={{ fontSize: `${fontSize}px`,
+                       backgroundColor: "transparent"}}
       >
         {codeData.code}
       </SyntaxHighlighter>
-    </div>
   );
 }

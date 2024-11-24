@@ -2,5 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Importação dos estilos do Swiper */
 @import 'swiper/css';

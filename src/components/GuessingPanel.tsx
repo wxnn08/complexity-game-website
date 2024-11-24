@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
 
@@ -31,7 +31,7 @@ export default function GuessingPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentCodeSide, setCurrentCodeSide] = useState<'left' | 'right'>('left');
 
-  const userResponsesRef = useRef(userResponses);
+  const userResponsesRef = React.useRef(userResponses);
 
   useEffect(() => {
     userResponsesRef.current = userResponses;
@@ -77,26 +77,6 @@ export default function GuessingPanel({
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
   }, [timeLeft, isLoading, onGameEnd, complexityCost]);
-
-  useEffect(() => {
-    if (isLoading || isSubmitting) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === '1') {
-        handleButtonClick('left');
-      } else if (event.key === '2') {
-        handleButtonClick('equal');
-      } else if (event.key === '3') {
-        handleButtonClick('right');
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isLoading, isSubmitting]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -148,11 +128,13 @@ export default function GuessingPanel({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
             <div className="card shadow-xl bg-base-100">
               <div className="card-body p-4">
+                <h3 className="text-xl font-semibold mb-2">Algoritmo 1</h3>
                 <CodeDisplay codeData={codes[index]} height="60vh" />
               </div>
             </div>
             <div className="card shadow-xl bg-base-100">
               <div className="card-body p-4">
+                <h3 className="text-xl font-semibold mb-2">Algoritmo 2</h3>
                 <CodeDisplay codeData={codes[index + 1]} height="60vh" />
               </div>
             </div>
@@ -163,6 +145,9 @@ export default function GuessingPanel({
           <div className="flex-grow p-4">
             <div className="card shadow-xl bg-base-100 h-full">
               <div className="card-body p-4">
+                <h3 className="text-xl font-semibold mb-2">
+                  {currentCodeSide === 'left' ? 'Algoritmo 1' : 'Algoritmo 2'}
+                </h3>
                 <CodeDisplay
                   codeData={currentCodeSide === 'left' ? codes[index] : codes[index + 1]}
                   height="60vh"
@@ -179,13 +164,13 @@ export default function GuessingPanel({
             onClick={() => setCurrentCodeSide('left')}
             className={`btn ${currentCodeSide === 'left' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
           >
-            Código 1
+            Algoritmo 1
           </button>
           <button
             onClick={() => setCurrentCodeSide('right')}
             className={`btn ${currentCodeSide === 'right' ? 'btn-primary' : 'btn-outline'} flex-1 mx-1`}
           >
-            Código 2
+            Algoritmo 2
           </button>
         </div>
 
@@ -194,22 +179,19 @@ export default function GuessingPanel({
             onClick={() => handleButtonClick("left")}
             className="btn btn-primary flex-1 mx-1"
           >
-            <span className="hidden sm:inline">Esquerda é mais rápido (1)</span>
-            <span className="sm:hidden">Esquerda (1)</span>
+            Primeiro é mais rápido
           </button>
           <button
             onClick={() => handleButtonClick("equal")}
             className="btn btn-accent flex-1 mx-1"
           >
-            <span className="hidden sm:inline">São iguais (2)</span>
-            <span className="sm:hidden">Iguais (2)</span>
+            São iguais
           </button>
           <button
             onClick={() => handleButtonClick("right")}
             className="btn btn-secondary flex-1 mx-1"
           >
-            <span className="hidden sm:inline">Direita é mais rápido (3)</span>
-            <span className="sm:hidden">Direita (3)</span>
+            Segundo é mais rápido
           </button>
         </div>
       </div>
