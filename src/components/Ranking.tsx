@@ -19,9 +19,51 @@ export default function Ranking() {
       })
       .then((response) => {
         const data: RankingEntry[] = response.data.ranking;
-        const sortedData = data.sort(
-          (a, b) => b.correct_answers - a.correct_answers
+
+        const bestParticipations = new Map<string, RankingEntry>();
+
+        data.forEach((entry) => {
+          const existingEntry = bestParticipations.get(entry.name);
+          const entryTime =
+            new Date(entry.timestamp_end).getTime() -
+            new Date(entry.timestamp_begin).getTime();
+          if (!existingEntry) {
+            bestParticipations.set(entry.name, entry);
+          } else {
+            const existingTime =
+              new Date(existingEntry.timestamp_end).getTime() -
+              new Date(existingEntry.timestamp_begin).getTime();
+
+            if (
+              entry.correct_answers > existingEntry.correct_answers ||
+              (entry.correct_answers === existingEntry.correct_answers &&
+                (entry.mistakes < existingEntry.mistakes ||
+                  (entry.mistakes === existingEntry.mistakes &&
+                    entryTime < existingTime)))
+            ) {
+              bestParticipations.set(entry.name, entry);
+            }
+          }
+        });
+
+        const sortedData = Array.from(bestParticipations.values()).sort(
+          (a, b) => {
+            if (b.correct_answers !== a.correct_answers) {
+              return b.correct_answers - a.correct_answers;
+            } else if (a.mistakes !== b.mistakes) {
+              return a.mistakes - b.mistakes;
+            } else {
+              const aTime =
+                new Date(a.timestamp_end).getTime() -
+                new Date(a.timestamp_begin).getTime();
+              const bTime =
+                new Date(b.timestamp_end).getTime() -
+                new Date(b.timestamp_begin).getTime();
+              return aTime - bTime;
+            }
+          }
         );
+
         setRankingData(sortedData);
         setIsLoading(false);
       })

@@ -58,8 +58,48 @@ export default function Result({
 
         setUserEvolution(userEvolutionData);
 
-        const generalRankingData = rankingData.sort(
-          (a, b) => b.correct_answers - a.correct_answers
+        const bestParticipations = new Map<string, RankingEntry>();
+
+        rankingData.forEach((entry) => {
+          const existingEntry = bestParticipations.get(entry.name);
+          const entryTime =
+            new Date(entry.timestamp_end).getTime() -
+            new Date(entry.timestamp_begin).getTime();
+          if (!existingEntry) {
+            bestParticipations.set(entry.name, entry);
+          } else {
+            const existingTime =
+              new Date(existingEntry.timestamp_end).getTime() -
+              new Date(existingEntry.timestamp_begin).getTime();
+
+            if (
+              entry.correct_answers > existingEntry.correct_answers ||
+              (entry.correct_answers === existingEntry.correct_answers &&
+                (entry.mistakes < existingEntry.mistakes ||
+                  (entry.mistakes === existingEntry.mistakes &&
+                    entryTime < existingTime)))
+            ) {
+              bestParticipations.set(entry.name, entry);
+            }
+          }
+        });
+
+        const generalRankingData = Array.from(bestParticipations.values()).sort(
+          (a, b) => {
+            if (b.correct_answers !== a.correct_answers) {
+              return b.correct_answers - a.correct_answers;
+            } else if (a.mistakes !== b.mistakes) {
+              return a.mistakes - b.mistakes;
+            } else {
+              const aTime =
+                new Date(a.timestamp_end).getTime() -
+                new Date(a.timestamp_begin).getTime();
+              const bTime =
+                new Date(b.timestamp_end).getTime() -
+                new Date(b.timestamp_begin).getTime();
+              return aTime - bTime;
+            }
+          }
         );
 
         setGeneralRanking(generalRankingData);
@@ -83,9 +123,14 @@ export default function Result({
     );
   }
 
-  const timeUtilized = timestampBegin && timestampEnd
-    ? ((new Date(timestampEnd).getTime() - new Date(timestampBegin).getTime()) / 1000)
-    : 0;
+  const timeUtilized =
+    timestampBegin && timestampEnd
+      ? (
+          (new Date(timestampEnd).getTime() -
+            new Date(timestampBegin).getTime()) /
+          1000
+        ).toFixed(2)
+      : "0";
 
   const mistakes = totalQuestions - score;
 
@@ -102,7 +147,7 @@ export default function Result({
               <p className="text-xl">Respostas corretas: {score}</p>
               <p className="text-xl">Erros: {mistakes}</p>
               <p className="text-xl">
-                Tempo utilizado: {timeUtilized.toFixed(2)} segundos
+                Tempo utilizado: {timeUtilized} segundos
               </p>
             </>
           ) : (

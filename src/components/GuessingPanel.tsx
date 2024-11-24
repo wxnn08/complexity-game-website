@@ -13,6 +13,7 @@ interface GuessingPanelProps {
   ) => void;
   userResponses: UserResponse[];
   setUserResponses: React.Dispatch<React.SetStateAction<UserResponse[]>>;
+  onCodesLoaded?: () => void;
 }
 
 export default function GuessingPanel({
@@ -20,6 +21,7 @@ export default function GuessingPanel({
   onGameEnd,
   userResponses,
   setUserResponses,
+  onCodesLoaded,
 }: GuessingPanelProps) {
   const [codes, setCodes] = useState<ICode[]>([]);
   const [index, setIndex] = useState(0);
@@ -30,6 +32,7 @@ export default function GuessingPanel({
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentCodeSide, setCurrentCodeSide] = useState<'left' | 'right'>('left');
+  const [timerStarted, setTimerStarted] = useState(false);
 
   const userResponsesRef = useRef(userResponses);
 
@@ -69,14 +72,23 @@ export default function GuessingPanel({
   }, [apiUrl]);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (!isLoading && !timerStarted) {
+      setTimerStarted(true);
+      if (onCodesLoaded) {
+        onCodesLoaded();
+      }
+    }
+  }, [isLoading, timerStarted, onCodesLoaded]);
+
+  useEffect(() => {
+    if (isLoading || !timerStarted) return;
     if (timeLeft <= 0) {
       onGameEnd(userResponsesRef.current, complexityCost);
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, isLoading, onGameEnd, complexityCost]);
+  }, [timeLeft, isLoading, onGameEnd, complexityCost, timerStarted]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)

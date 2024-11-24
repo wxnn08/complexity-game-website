@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import GuessingPanel from "./GuessingPanel";
@@ -100,12 +100,14 @@ export default function Game() {
     navigate("/");
   };
 
+  const handleCodesLoaded = useCallback(() => {
+    const timestampBeginValue = new Date().toISOString();
+    setTimestampBegin(timestampBeginValue);
+  }, []);
+
   useEffect(() => {
     if (!state || !state.playerName) {
       navigate("/");
-    } else {
-      const timestampBeginValue = new Date().toISOString();
-      setTimestampBegin(timestampBeginValue);
     }
   }, [state, navigate]);
 
@@ -117,6 +119,7 @@ export default function Game() {
           onGameEnd={handleGameEnd}
           userResponses={userResponses}
           setUserResponses={setUserResponses}
+          onCodesLoaded={handleCodesLoaded}
         />
       ) : (
         <Result
