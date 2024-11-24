@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ICode, UserResponse } from "../schemas/ICode";
 import CodeDisplay from "./CodeDisplay";
 
@@ -31,7 +31,7 @@ export default function GuessingPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentCodeSide, setCurrentCodeSide] = useState<'left' | 'right'>('left');
 
-  const userResponsesRef = React.useRef(userResponses);
+  const userResponsesRef = useRef(userResponses);
 
   useEffect(() => {
     userResponsesRef.current = userResponses;
@@ -66,7 +66,7 @@ export default function GuessingPanel({
         console.error("Erro ao buscar códigos:", error);
         setIsLoading(false);
       });
-  }, []);
+  }, [apiUrl]);
 
   useEffect(() => {
     if (isLoading) return;

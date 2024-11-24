@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { UserResponse, RankingEntry } from "../schemas/ICode";
 import AnswerSummary from "./AnswerSummary";
-
 import {
   ResponsiveContainer,
   LineChart,
@@ -73,7 +72,7 @@ export default function Result({
         console.error("Erro ao buscar o ranking:", error);
         setIsLoading(false);
       });
-  }, [loadingResult, groupName, playerName]);
+  }, [loadingResult, groupName, playerName, apiUrl]);
 
   if (isLoading || loadingResult) {
     return (

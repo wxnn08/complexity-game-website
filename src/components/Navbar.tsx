@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import SettingsModal from "./SettingsModal";
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Navbar() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const location = useLocation();
 
   const toggleSettingsModal = () => {
     setIsSettingsOpen(!isSettingsOpen);
@@ -12,9 +14,22 @@ export default function Navbar() {
     <>
       <nav className="navbar bg-base-100 px-4">
         <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl">Big-O Battle</a>
+          <Link to="/" className="btn btn-ghost normal-case text-xl">Big-O Battle</Link>
         </div>
-        <div className="flex-none">
+        <div className="flex-1 flex justify-center">
+          <ul className="menu menu-horizontal p-0 space-x-4">
+            <li className={location.pathname === "/" ? "active" : ""}>
+              <Link to="/">Home</Link>
+            </li>
+            <li className={location.pathname === "/tutorial" ? "active" : ""}>
+              <Link to="/tutorial">Tutorial</Link>
+            </li>
+            <li className={location.pathname === "/ranking" ? "active" : ""}>
+              <Link to="/ranking">Ranking</Link>
+            </li>
+          </ul>
+        </div>
+        <div className="flex-1 flex justify-end">
           <button className="btn btn-square btn-ghost" onClick={toggleSettingsModal}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
