@@ -19,6 +19,9 @@ interface ResultProps {
   playerName: string;
   groupName: string;
   loadingResult: boolean;
+  timestampBegin: string;
+  timestampEnd: string;
+  totalQuestions: number;
 }
 
 export default function Result({
@@ -28,6 +31,9 @@ export default function Result({
   playerName,
   groupName,
   loadingResult,
+  timestampBegin,
+  timestampEnd,
+  totalQuestions,
 }: ResultProps) {
   const [userEvolution, setUserEvolution] = useState<RankingEntry[]>([]);
   const [generalRanking, setGeneralRanking] = useState<RankingEntry[]>([]);
@@ -46,22 +52,14 @@ export default function Result({
           .filter((entry) => entry.name === playerName)
           .sort(
             (a, b) =>
-              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+              new Date(a.timestamp_begin).getTime() -
+              new Date(b.timestamp_begin).getTime()
           );
 
         setUserEvolution(userEvolutionData);
 
-        const bestScoresMap = new Map<string, RankingEntry>();
-
-        rankingData.forEach((entry) => {
-          const existingEntry = bestScoresMap.get(entry.name);
-          if (!existingEntry || entry.score > existingEntry.score) {
-            bestScoresMap.set(entry.name, entry);
-          }
-        });
-
-        const generalRankingData = Array.from(bestScoresMap.values()).sort(
-          (a, b) => b.score - a.score
+        const generalRankingData = rankingData.sort(
+          (a, b) => b.correct_answers - a.correct_answers
         );
 
         setGeneralRanking(generalRankingData);
@@ -85,6 +83,12 @@ export default function Result({
     );
   }
 
+  const timeUtilized = timestampBegin && timestampEnd
+    ? ((new Date(timestampEnd).getTime() - new Date(timestampBegin).getTime()) / 1000)
+    : 0;
+
+  const mistakes = totalQuestions - score;
+
   return (
     <div className="flex flex-col items-center mt-4 w-full px-4">
       <div className="card w-full bg-base-100 shadow-xl mb-6">
@@ -95,7 +99,11 @@ export default function Result({
               <p className="text-xl">
                 Você respondeu {userResponses.length} questões!
               </p>
-              <p className="text-xl">Sua pontuação: {score}</p>
+              <p className="text-xl">Respostas corretas: {score}</p>
+              <p className="text-xl">Erros: {mistakes}</p>
+              <p className="text-xl">
+                Tempo utilizado: {timeUtilized.toFixed(2)} segundos
+              </p>
             </>
           ) : (
             <p className="text-xl">
@@ -122,7 +130,7 @@ export default function Result({
                   <LineChart data={userEvolution}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
-                      dataKey="timestamp"
+                      dataKey="timestamp_begin"
                       tickFormatter={(tick) =>
                         new Date(tick).toLocaleDateString()
                       }
@@ -135,7 +143,7 @@ export default function Result({
                     />
                     <Line
                       type="monotone"
-                      dataKey="score"
+                      dataKey="correct_answers"
                       stroke="#8884d8"
                       activeDot={{ r: 8 }}
                     />
@@ -158,7 +166,9 @@ export default function Result({
                     <tr>
                       <th>#</th>
                       <th>Nome</th>
-                      <th>Pontuação</th>
+                      <th>Corretas</th>
+                      <th>Erros</th>
+                      <th>Tempo Utilizado</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -169,7 +179,16 @@ export default function Result({
                       >
                         <td>{index + 1}</td>
                         <td>{entry.name}</td>
-                        <td>{entry.score}</td>
+                        <td>{entry.correct_answers}</td>
+                        <td>{entry.mistakes}</td>
+                        <td>
+                          {(
+                            (new Date(entry.timestamp_end).getTime() -
+                              new Date(entry.timestamp_begin).getTime()) /
+                            1000
+                          ).toFixed(2)}{" "}
+                          s
+                        </td>
                       </tr>
                     ))}
                   </tbody>

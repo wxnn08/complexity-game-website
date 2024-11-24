@@ -20,7 +20,9 @@ export interface UserResponse {
 
 export interface RankingEntry {
   name: string;
-  score: number;
+  correct_answers: number;
+  mistakes: number;
+  timestamp_begin: string;
+  timestamp_end: string;
   group: string;
-  timestamp: string;
 }

@@ -24,6 +24,8 @@ export default function Game() {
   const [playerName, setPlayerName] = useState(state?.playerName || "");
   const [groupName, setGroupName] = useState(state?.groupName || "general");
   const [loadingResult, setLoadingResult] = useState(false);
+  const [timestampBegin, setTimestampBegin] = useState<string>("");
+  const [timestampEnd, setTimestampEnd] = useState<string>("");
 
   const handleGameEnd = useCallback(
     async (
@@ -35,7 +37,7 @@ export default function Game() {
         return map;
       }, {} as { [key: string]: number });
 
-      let userScore = 0;
+      let correctAnswers = 0;
 
       const updatedResponses = userResponses.map((response) => {
         const leftComplexity = response.leftCode.time_complexity;
@@ -55,7 +57,7 @@ export default function Game() {
 
         const isCorrect = response.userAnswer === correctAnswer;
         if (isCorrect) {
-          userScore += 1;
+          correctAnswers += 1;
         }
 
         return {
@@ -66,24 +68,32 @@ export default function Game() {
         };
       });
 
+      const mistakes = userResponses.length - correctAnswers;
+
       setUserResponses(updatedResponses);
       setLoadingResult(true);
+
+      const timestampEndValue = new Date().toISOString();
+      setTimestampEnd(timestampEndValue);
 
       try {
         await axios.post(`${apiUrl}/api/ranking`, {
           name: playerName,
-          score: userScore,
+          correct_answers: correctAnswers,
+          mistakes: mistakes,
+          timestamp_begin: timestampBegin,
+          timestamp_end: timestampEndValue,
           group: groupName,
         });
       } catch (error) {
         console.error("Erro ao atualizar o ranking:", error);
       }
 
-      setScore(userScore);
+      setScore(correctAnswers);
       setGameStarted(false);
       setLoadingResult(false);
     },
-    [playerName, groupName]
+    [playerName, groupName, timestampBegin]
   );
 
   const handleRestart = () => {
@@ -93,6 +103,9 @@ export default function Game() {
   useEffect(() => {
     if (!state || !state.playerName) {
       navigate("/");
+    } else {
+      const timestampBeginValue = new Date().toISOString();
+      setTimestampBegin(timestampBeginValue);
     }
   }, [state, navigate]);
 
@@ -113,6 +126,9 @@ export default function Game() {
           playerName={playerName}
           groupName={groupName}
           loadingResult={loadingResult}
+          timestampBegin={timestampBegin}
+          timestampEnd={timestampEnd}
+          totalQuestions={userResponses.length}
         />
       )}
     </div>

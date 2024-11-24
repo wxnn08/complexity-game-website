@@ -14,17 +14,15 @@ export default function Ranking() {
     setIsLoading(true);
     setError("");
     axios
-      .get(`${apiUrl}/api/ranking`, { params: { group: group.trim() === "" ? "general" : group.trim() } })
+      .get(`${apiUrl}/api/ranking`, {
+        params: { group: group.trim() === "" ? "general" : group.trim() },
+      })
       .then((response) => {
         const data: RankingEntry[] = response.data.ranking;
-        const highestScoresMap = new Map<string, RankingEntry>();
-        data.forEach(entry => {
-          if (!highestScoresMap.has(entry.name) || entry.score > highestScoresMap.get(entry.name)!.score) {
-            highestScoresMap.set(entry.name, entry);
-          }
-        });
-        const highestScores = Array.from(highestScoresMap.values()).sort((a, b) => b.score - a.score);
-        setRankingData(highestScores);
+        const sortedData = data.sort(
+          (a, b) => b.correct_answers - a.correct_answers
+        );
+        setRankingData(sortedData);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -58,14 +56,18 @@ export default function Ranking() {
         {error && <p className="text-red-500 mt-4">{error}</p>}
         {!isLoading && rankingData.length > 0 && (
           <div className="mt-6">
-            <h3 className="text-xl font-semibold mb-2">Ranking do Grupo: {group.trim() === "" ? "general" : group}</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              Ranking do Grupo: {group.trim() === "" ? "general" : group}
+            </h3>
             <div className="overflow-x-auto">
               <table className="table w-full">
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Nome</th>
-                    <th>Pontuação</th>
+                    <th>Corretas</th>
+                    <th>Erros</th>
+                    <th>Tempo Utilizado</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -73,7 +75,16 @@ export default function Ranking() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{entry.name}</td>
-                      <td>{entry.score}</td>
+                      <td>{entry.correct_answers}</td>
+                      <td>{entry.mistakes}</td>
+                      <td>
+                        {(
+                          (new Date(entry.timestamp_end).getTime() -
+                            new Date(entry.timestamp_begin).getTime()) /
+                          1000
+                        ).toFixed(2)}{" "}
+                        s
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -82,7 +93,10 @@ export default function Ranking() {
           </div>
         )}
         {!isLoading && rankingData.length === 0 && !error && (
-          <p className="text-center mt-4">Nenhum ranking encontrado para o grupo "{group.trim() === "" ? "general" : group}".</p>
+          <p className="text-center mt-4">
+            Nenhum ranking encontrado para o grupo "
+            {group.trim() === "" ? "general" : group}".
+          </p>
         )}
       </div>
     </div>
