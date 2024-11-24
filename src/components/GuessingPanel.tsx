@@ -124,7 +124,7 @@ export default function GuessingPanel({
       </div>
 
       <div className="flex-grow flex flex-col mt-4">
-        <div className="hidden md:flex flex-grow justify-center items-start">
+        <div className="hidden md:flex flex-grow justify-center items-start mb-14">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 md:px-12">
             <div className="card shadow-xl bg-base-100">
               <div className="card-body p-4">
