@@ -52,12 +52,6 @@ Para comparar a complexidade de tempo de dois algoritmos, siga estes passos:
    - Menor complexidade indica um algoritmo mais eficiente.
    - Por exemplo, **O(n)** é mais rápido que **O(n²)** para entradas grandes.
 
-4. **Considere Casos Especiais:**
-   - Análise de pior caso, melhor caso e caso médio.
-   - Certifique-se de estar comparando a mesma métrica para ambos os algoritmos.
-
-Lembre-se de que esta é uma análise teórica. Fatores como constantes ocultas e desempenho em implementações práticas também podem influenciar a eficiência real.
-
 Divirta-se jogando e aprimorando seu entendimento sobre a complexidade de algoritmos!
   `;
 
