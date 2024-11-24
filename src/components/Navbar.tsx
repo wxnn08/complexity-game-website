@@ -32,7 +32,7 @@ export default function Navbar() {
             </label>
             <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 z-50">
               <li className={location.pathname === "/" ? "active" : ""}>
-                <Link to="/" onClick={handleLinkClick}>Home</Link>
+                <Link to="/" onClick={handleLinkClick}>Jogar</Link>
               </li>
               <li className={location.pathname === "/tutorial" ? "active" : ""}>
                 <Link to="/tutorial" onClick={handleLinkClick}>Tutorial</Link>
@@ -46,7 +46,7 @@ export default function Navbar() {
         <div className="flex-none hidden lg:flex">
           <ul className="menu menu-horizontal p-0 space-x-4">
             <li className={location.pathname === "/" ? "active" : ""}>
-              <Link to="/">Home</Link>
+              <Link to="/">Jogar</Link>
             </li>
             <li className={location.pathname === "/tutorial" ? "active" : ""}>
               <Link to="/tutorial">Tutorial</Link>
