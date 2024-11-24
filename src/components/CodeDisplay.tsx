@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
-import { duotoneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { dracula } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import clojure from "react-syntax-highlighter/dist/cjs/languages/prism/clojure";
 import python from "react-syntax-highlighter/dist/cjs/languages/prism/python";
 import cpp from "react-syntax-highlighter/dist/cjs/languages/prism/cpp";
@@ -36,7 +36,7 @@ export default function CodeDisplay({ codeData, className, height }: CodeDisplay
 
   return (
     <SyntaxHighlighter
-      style={duotoneDark}
+      style={dracula}
       language={codeData.language}
       showLineNumbers={true}
       customStyle={{
