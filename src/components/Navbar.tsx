@@ -10,6 +10,11 @@ export default function Navbar() {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  const handleLinkClick = () => {
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur();
+  };
+
   return (
     <>
       <nav className="navbar bg-base-100 px-4 relative z-10">
@@ -27,13 +32,13 @@ export default function Navbar() {
             </label>
             <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 z-50">
               <li className={location.pathname === "/" ? "active" : ""}>
-                <Link to="/">Home</Link>
+                <Link to="/" onClick={handleLinkClick}>Home</Link>
               </li>
               <li className={location.pathname === "/tutorial" ? "active" : ""}>
-                <Link to="/tutorial">Tutorial</Link>
+                <Link to="/tutorial" onClick={handleLinkClick}>Tutorial</Link>
               </li>
               <li className={location.pathname === "/ranking" ? "active" : ""}>
-                <Link to="/ranking">Ranking</Link>
+                <Link to="/ranking" onClick={handleLinkClick}>Ranking</Link>
               </li>
             </ul>
           </div>
