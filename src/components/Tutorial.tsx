@@ -59,13 +59,13 @@ Para comparar a complexidade de tempo de dois algoritmos, siga estes passos:
 Lembre-se de que esta é uma análise teórica. Fatores como constantes ocultas e desempenho em implementações práticas também podem influenciar a eficiência real.
 
 Divirta-se jogando e aprimorando seu entendimento sobre a complexidade de algoritmos!
-`;
+  `;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4">
-      <div className="card w-full max-w-3xl bg-white shadow-xl p-6">
+    <div className="flex flex-col items-center min-h-screen p-4">
+      <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
         <ReactMarkdown
-          className="prose text-base font-sans"
+          className="prose text-base"
           remarkPlugins={[remarkGfm]}
         >
           {tutorialContent}

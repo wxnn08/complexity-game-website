@@ -18,29 +18,27 @@ export default function Home({}: HomeProps) {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500 pt-8">
-      <div className="card shadow-2xl w-full max-w-md bg-white rounded-lg mt-10">
-        <div className="card-body">
-          <p className="text-2xl mb-6 text-center font-bold text-indigo-600">Big-O Battle</p>
-          <input
-            type="text"
-            placeholder="Seu nome"
-            className="input input-bordered w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Grupo (opcional)"
-            className="input input-bordered w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-          />
-          <div className="flex justify-center mt-6">
-            <button className="btn btn-primary btn-lg bg-indigo-600 hover:bg-indigo-700 text-white" onClick={handleStartClick}>
-              Jogar
-            </button>
-          </div>
+    <div className="flex flex-col items-center min-h-screen p-4">
+      <div className="w-full max-w-md bg-base-100 p-6 rounded-lg shadow-lg">
+        <p className="text-2xl mb-6 text-center font-bold">Big-O Battle</p>
+        <input
+          type="text"
+          placeholder="Seu nome"
+          className="input input-bordered w-full mb-4"
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Grupo (opcional)"
+          className="input input-bordered w-full mb-4"
+          value={groupName}
+          onChange={(e) => setGroupName(e.target.value)}
+        />
+        <div className="flex justify-center mt-6">
+          <button className="btn btn-primary btn-lg" onClick={handleStartClick}>
+            Jogar
+          </button>
         </div>
       </div>
     </div>
