@@ -12,6 +12,8 @@ interface LocationState {
   groupName: string;
 }
 
+const isValidInput = (input: string) => /^[a-zA-Z0-9 _-]+$/.test(input);
+
 export default function Game() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,6 +28,12 @@ export default function Game() {
   const [loadingResult, setLoadingResult] = useState(false);
   const [timestampBegin, setTimestampBegin] = useState<string>("");
   const [timestampEnd, setTimestampEnd] = useState<string>("");
+
+  useEffect(() => {
+    if (!state || !state.playerName || !isValidInput(state.playerName) || !isValidInput(state.groupName)) {
+      navigate("/");
+    }
+  }, [state, navigate]);
 
   const handleGameEnd = useCallback(
     async (
@@ -104,12 +112,6 @@ export default function Game() {
     const timestampBeginValue = new Date().toISOString();
     setTimestampBegin(timestampBeginValue);
   }, []);
-
-  useEffect(() => {
-    if (!state || !state.playerName) {
-      navigate("/");
-    }
-  }, [state, navigate]);
 
   return (
     <div>

@@ -3,14 +3,21 @@ import { useNavigate } from "react-router-dom";
 
 interface HomeProps {}
 
+const isValidInput = (input: string) => /^[a-zA-Z0-9 _-]+$/.test(input);
+
 export default function Home({}: HomeProps) {
   const [playerName, setPlayerName] = useState("");
   const [groupName, setGroupName] = useState("");
   const navigate = useNavigate();
 
   const handleStartClick = () => {
-    if (playerName.trim() === "") {
-      alert("Por favor, insira seu nome antes de começar o jogo.");
+    setPlayerName(playerName.trim())
+    if (!isValidInput(playerName) || playerName !== "" || playerName.length > 20 || playerName.length < 3) {
+      alert("Por favor, insira um nome válido (entre 3 e 20 caracteres, sem caracteres especiais).");
+      return;
+    }
+    if (groupName && (!isValidInput(groupName) || groupName.length > 20)) {
+      alert("O nome do grupo é inválido (máximo 20 caracteres, sem caracteres especiais).");
       return;
     }
     const group = groupName.trim() === "" ? "general" : groupName.trim();

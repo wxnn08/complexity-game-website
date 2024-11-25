@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import DOMPurify from "dompurify";
 import { RankingEntry } from "../schemas/ICode";
 
 const apiUrl = process.env.REACT_APP_API_URL;
+
+const isValidInput = (input: string) => /^[a-zA-Z0-9 _-]+$/.test(input);
 
 export default function Ranking() {
   const [group, setGroup] = useState<string>("general");
@@ -10,9 +13,17 @@ export default function Ranking() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
+  const sanitizeText = (text: string) => DOMPurify.sanitize(text);
+
   const handleSearch = () => {
+    if (!isValidInput(group) || group.length > 20) {
+      setError("O nome do grupo é inválido. Certifique-se de que contém no máximo 20 caracteres e não inclui caracteres especiais.");
+      return;
+    }
+
     setIsLoading(true);
     setError("");
+
     axios
       .get(`${apiUrl}/api/ranking`, {
         params: { group: group.trim() === "" ? "general" : group.trim() },
@@ -27,6 +38,7 @@ export default function Ranking() {
           const entryTime =
             new Date(entry.timestamp_end).getTime() -
             new Date(entry.timestamp_begin).getTime();
+
           if (!existingEntry) {
             bestParticipations.set(entry.name, entry);
           } else {
@@ -64,7 +76,10 @@ export default function Ranking() {
           }
         );
 
-        setRankingData(sortedData);
+        setRankingData(sortedData.map((entry) => ({
+          ...entry,
+          name: sanitizeText(entry.name), // Sanitize player names
+        })));
         setIsLoading(false);
       })
       .catch((err) => {
@@ -99,7 +114,7 @@ export default function Ranking() {
         {!isLoading && rankingData.length > 0 && (
           <div className="mt-6">
             <h3 className="text-xl font-semibold mb-2">
-              Ranking do Grupo: {group.trim() === "" ? "general" : group}
+              Ranking do Grupo: {sanitizeText(group.trim() === "" ? "general" : group)}
             </h3>
             <div className="overflow-x-auto">
               <table className="table w-full">
@@ -137,7 +152,7 @@ export default function Ranking() {
         {!isLoading && rankingData.length === 0 && !error && (
           <p className="text-center mt-4">
             Nenhum ranking encontrado para o grupo "
-            {group.trim() === "" ? "general" : group}".
+            {sanitizeText(group.trim() === "" ? "general" : group)}".
           </p>
         )}
       </div>
