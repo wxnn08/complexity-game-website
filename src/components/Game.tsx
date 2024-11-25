@@ -30,7 +30,7 @@ export default function Game() {
   const [timestampEnd, setTimestampEnd] = useState<string>("");
 
   useEffect(() => {
-    if (!state || !state.playerName || !isValidInput(state.playerName) || !isValidInput(state.groupName)) {
+    if (!state || !state.playerName) {
       navigate("/");
     }
   }, [state, navigate]);

@@ -11,17 +11,18 @@ export default function Home({}: HomeProps) {
   const navigate = useNavigate();
 
   const handleStartClick = () => {
-    setPlayerName(playerName.trim())
-    if (!isValidInput(playerName) || playerName === "" || playerName.length > 20 || playerName.length < 3) {
-      alert("Por favor, insira um nome válido (entre 3 e 20 caracteres, sem caracteres especiais).");
+    var playerNameSanitized = playerName.trim()
+
+    if (!isValidInput(playerNameSanitized) || playerNameSanitized === "" || playerNameSanitized.length > 30 || playerNameSanitized.length < 3) {
+      alert("Por favor, insira um nome válido (entre 3 e 30 caracteres, sem caracteres especiais).");
       return;
     }
-    if (groupName && (!isValidInput(groupName) || groupName.length > 20)) {
-      alert("O nome do grupo é inválido (máximo 20 caracteres, sem caracteres especiais).");
+    if (groupName && (!isValidInput(groupName) || groupName.length > 30)) {
+      alert("O nome do grupo é inválido (máximo 30 caracteres, sem caracteres especiais).");
       return;
     }
     const group = groupName.trim() === "" ? "general" : groupName.trim();
-    navigate("/game", { state: { playerName, groupName: group } });
+    navigate("/game", { state: { playerName: playerNameSanitized, groupName: group } });
   };
 
   return (

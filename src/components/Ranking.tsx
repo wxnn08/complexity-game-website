@@ -9,15 +9,15 @@ const isValidInput = (input: string) => /^[a-zA-Z0-9 _-]+$/.test(input);
 
 export default function Ranking() {
   const [group, setGroup] = useState<string>("general");
-  const [rankingData, setRankingData] = useState<RankingEntry[]>([]);
+  const [rankingData, setRankingData] = useState<(RankingEntry & { tentativas: number })[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const sanitizeText = (text: string) => DOMPurify.sanitize(text);
 
   const handleSearch = () => {
-    if (!isValidInput(group) || group.length > 20) {
-      setError("O nome do grupo é inválido. Certifique-se de que contém no máximo 20 caracteres e não inclui caracteres especiais.");
+    if (!isValidInput(group) || group.length > 30) {
+      setError("O nome do grupo é inválido. Certifique-se de que contém no máximo 30 caracteres e não inclui caracteres especiais.");
       return;
     }
 
@@ -30,6 +30,12 @@ export default function Ranking() {
       })
       .then((response) => {
         const data: RankingEntry[] = response.data.ranking;
+
+        const attemptsMap = data.reduce((map, entry) => {
+          const name = entry.name;
+          map[name] = (map[name] || 0) + 1;
+          return map;
+        }, {} as { [name: string]: number });
 
         const bestParticipations = new Map<string, RankingEntry>();
 
@@ -76,10 +82,13 @@ export default function Ranking() {
           }
         );
 
-        setRankingData(sortedData.map((entry) => ({
+        const rankingDataWithAttempts = sortedData.map((entry) => ({
           ...entry,
-          name: sanitizeText(entry.name), // Sanitize player names
-        })));
+          name: sanitizeText(entry.name),
+          tentativas: attemptsMap[entry.name] || 1,
+        }));
+
+        setRankingData(rankingDataWithAttempts);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -125,6 +134,7 @@ export default function Ranking() {
                     <th>Corretas</th>
                     <th>Erros</th>
                     <th>Tempo Utilizado</th>
+                    <th>Tentativas</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -142,6 +152,7 @@ export default function Ranking() {
                         ).toFixed(2)}{" "}
                         s
                       </td>
+                      <td>{entry.tentativas}</td>
                     </tr>
                   ))}
                 </tbody>

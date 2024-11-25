@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import DOMPurify from "dompurify";
 import { UserResponse, RankingEntry } from "../schemas/ICode";
 import AnswerSummary from "./AnswerSummary";
 import {
@@ -24,6 +25,8 @@ interface ResultProps {
   totalQuestions: number;
 }
 
+const sanitizeText = (text: string) => DOMPurify.sanitize(text);
+
 export default function Result({
   userResponses,
   onRestart,
@@ -36,7 +39,7 @@ export default function Result({
   totalQuestions,
 }: ResultProps) {
   const [userEvolution, setUserEvolution] = useState<RankingEntry[]>([]);
-  const [generalRanking, setGeneralRanking] = useState<RankingEntry[]>([]);
+  const [generalRanking, setGeneralRanking] = useState<(RankingEntry & { tentativas: number })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -58,6 +61,12 @@ export default function Result({
 
         setUserEvolution(userEvolutionData);
 
+        const attemptsMap = rankingData.reduce((map, entry) => {
+          const name = entry.name;
+          map[name] = (map[name] || 0) + 1;
+          return map;
+        }, {} as { [name: string]: number });
+
         const bestParticipations = new Map<string, RankingEntry>();
 
         rankingData.forEach((entry) => {
@@ -65,6 +74,7 @@ export default function Result({
           const entryTime =
             new Date(entry.timestamp_end).getTime() -
             new Date(entry.timestamp_begin).getTime();
+
           if (!existingEntry) {
             bestParticipations.set(entry.name, entry);
           } else {
@@ -102,7 +112,13 @@ export default function Result({
           }
         );
 
-        setGeneralRanking(generalRankingData);
+        const rankingDataWithAttempts = generalRankingData.map((entry) => ({
+          ...entry,
+          name: sanitizeText(entry.name),
+          tentativas: attemptsMap[entry.name] || 1,
+        }));
+
+        setGeneralRanking(rankingDataWithAttempts);
 
         setIsLoading(false);
       })
@@ -168,7 +184,7 @@ export default function Result({
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <h3 className="card-title text-2xl">
-                Sua Evolução - Grupo: {groupName}
+                Sua Evolução - Grupo: {sanitizeText(groupName)}
               </h3>
               <div className="w-full h-64 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
@@ -203,7 +219,7 @@ export default function Result({
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <h3 className="card-title text-2xl">
-                Ranking Geral - Grupo: {groupName}
+                Ranking Geral - Grupo: {sanitizeText(groupName)}
               </h3>
               <div className="overflow-x-auto mt-4">
                 <table className="table w-full">
@@ -214,6 +230,7 @@ export default function Result({
                       <th>Corretas</th>
                       <th>Erros</th>
                       <th>Tempo Utilizado</th>
+                      <th>Tentativas</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -234,6 +251,7 @@ export default function Result({
                           ).toFixed(2)}{" "}
                           s
                         </td>
+                        <td>{entry.tentativas}</td>
                       </tr>
                     ))}
                   </tbody>
