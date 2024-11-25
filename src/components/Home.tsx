@@ -12,7 +12,7 @@ export default function Home({}: HomeProps) {
 
   const handleStartClick = () => {
     setPlayerName(playerName.trim())
-    if (!isValidInput(playerName) || playerName !== "" || playerName.length > 20 || playerName.length < 3) {
+    if (!isValidInput(playerName) || playerName === "" || playerName.length > 20 || playerName.length < 3) {
       alert("Por favor, insira um nome válido (entre 3 e 20 caracteres, sem caracteres especiais).");
       return;
     }
